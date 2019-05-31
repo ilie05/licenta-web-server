@@ -22,7 +22,7 @@ class Validation(object):
                 if regex_res:
                     return email
                 else:
-                    raise Exception("\'{}\' is not a valid email address".format(original_email))
+                    raise Exception("\'{}\' is not a valid email address!".format(original_email))
             else:
                 return email
 
@@ -34,7 +34,7 @@ class Validation(object):
                 else:
                     return '.'.join(email)
             else:
-                raise Exception("\'{}\' is not a valid email address".format(original_email))
+                raise Exception("\'{}\' is not a valid email address!".format(original_email))
         return str(''.join(email))
 
     @staticmethod
@@ -44,7 +44,7 @@ class Validation(object):
         if re.match(pattern, name):
             return name
 
-        raise Exception("\'{}\' is not a valid domain name".format(name))
+        raise Exception("\'{}\' is not a valid domain name!".format(name))
 
     @staticmethod
     def check_ipv4(address: str) -> str:
@@ -52,7 +52,7 @@ class Validation(object):
         if re.match(REGEX_ipv4, address):
             return address
 
-        raise Exception("\'{}\' is not a valid IPv4 address".format(address))
+        raise Exception("\'{}\' is not a valid IPv4 address!".format(address))
 
     @staticmethod
     def check_ipv6(address: str) -> str:
@@ -60,7 +60,19 @@ class Validation(object):
         if re.match(REGEX_ipv6, address):
             return address
 
-        raise Exception("\'{}\' is not a valid IPv6 address".format(address))
+        raise Exception("\'{}\' is not a valid IPv6 address!".format(address))
+
+    @staticmethod
+    def check_ttl(ttl: str) -> int:
+        try:
+            ttl = int(ttl)
+        except :
+            raise Exception("\'{}\' must be an integer value!".format(ttl))
+
+        if ttl in range(2147483648):
+            return ttl
+
+        raise Exception("TTL must be in [0, 2147483647] range!")
 
 
 if __name__ == '__main__':
@@ -76,3 +88,8 @@ if __name__ == '__main__':
     except Exception as e:
         print(str(e))
 
+    try:
+        res3 = Validation.check_ttl('-8')
+        print(res3)
+    except Exception as e:
+        print(str(e))
