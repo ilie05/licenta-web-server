@@ -4,6 +4,8 @@ REGEX_email = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,
 
 # max. 63 characters; must not start or end with hyphen
 REGEX_label = r'[a-zA-Z90-9]([a-zA-Z90-9-]{0,61}[a-zA-Z90-9])?'
+REGEX_ipv4 = r'^\d{1,3}(\.\d{1,3}){3}$'
+REGEX_ipv6 = r'^[a-fA-F0-9]{1,4}(::?[a-fA-F0-9]{1,4}){1,7}$'
 
 
 class Validation(object):
@@ -43,6 +45,22 @@ class Validation(object):
             return name
 
         raise Exception("\'{}\' is not a valid domain name".format(name))
+
+    @staticmethod
+    def check_ipv4(address: str) -> str:
+        address = str(address)
+        if re.match(REGEX_ipv4, address):
+            return address
+
+        raise Exception("\'{}\' is not a valid IPv4 address".format(address))
+
+    @staticmethod
+    def check_ipv6(address: str) -> str:
+        address = str(address)
+        if re.match(REGEX_ipv6, address):
+            return address
+
+        raise Exception("\'{}\' is not a valid IPv6 address".format(address))
 
 
 if __name__ == '__main__':
