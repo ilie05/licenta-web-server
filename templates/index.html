@@ -1,91 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <title>DNS MANAGER</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename = 'script.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}">
 </head>
 <body>
-    <div class="container-fluid">
-		<form action="record" method="post">
 
-			<div class="row">
-				<div class="col-sm-3" style="background-color:#3fff7d;">
-					<h2>Base data</h2>
-					<div class="form-group">
-				        <label for="domain">Domain name: </label>
-				        <input name="domain" id="domain" class="form-control" type="text" >
-					</div>
-					<div class="form-group">
-				        <label for="admin_mail">Admin mail: </label>
-				        <input name="admin_mail" id="admin_mail" class="form-control" type="email">
-				    </div>
-				    <div class="form-group">
-				    	<label for="class_type">Class: </label>
-				        <select name="class_type" id="class_type" class="form-control" required>
-				            <option value="IN" selected>IN</option>
-				        </select >
-				    </div>
-				</div>
+    <h1>DNS Manager</h1>
+    <h2></h2>
 
-				<div class="col-sm-3" style="background-color:#438a90;">
-					<h2>IP Address</h2>
-					<div class="form-group">
-						<label for="ip_addr_type">Type: </label>
-				        <select name="ip_addr_type" id="ip_addr_type" class="form-control" required>
-				            <option value="A" selected>A</option>
-				        	<option value="AAAA">AAAA</option>
-				        </select>
-				    </div>
-				    <div class="form-group">
-						<label for="ip_address">IP Address: </label>
-        				<input name="ip_address" id="ip_address" class="form-control" type="text">
-        			</div>
-        			<div class="form-group">
-        				<label for="ip_host">Host name: </label>
-        				<input name="ip_host" id="ip_host" class="form-control" type="text">
-					</div>
-				</div>
-
-				<div class="col-sm-3" style="background-color:#7d8042;">
-					<h2>Mail server</h2>
-					<div class="form-group">
-        				<label for="mail_host">Mail host name:</label>
-        				<input name="mail_host" id="mail_host" class="form-control" type="text">
-        			</div>
-                    <div class="form-group">
-                        <label form="mail_ip_host">Mail IP Address</label>
-                        <input name="mail_ip_host" ip="mail_ip_host" class="form-control" type="text">
-                    </div>
-        			<div class="form-group">
-        				<label for="mail_priority">Priority: </label>
-        				<input name="mail_priority" id="mail_priority" class="form-control" type="number">
-        			</div>
-				</div>
-
-				<div class="col-sm-3" style="background-color:#5edbff;">
-					<h2>Timing</h2>
-					<div class="form-group">
-						<label for="ttl">TTL</label>
-	        			<input name="ttl" id="ttl" class="form-control" type="number"><br>
-					</div>
-				</div>
-			</div>
-
-			<button type="submit" class="btn btn-primary">Submit</button>
-    	</form>
+    <div>
+        <div class="tab">
+            <button class="tablinks" onclick="openCity(event, 'domain')" id="defaultOpen">Domain</button>
+            <button class="tablinks" onclick="openCity(event, 'hosts')">Hosts</button>
+            <button class="tablinks" onclick="openCity(event, 'mail')">Mail</button>
+            <button class="tablinks" onclick="openCity(event, 'other')">Other</button>
+        </div>
     </div>
+
+    <form id="record_form">
+        <div class="container-fluid">
+            <div id="domain" class="tabcontent">
+                <div class="row">
+                    <div class="col-sm" style="background-color:#3fff7d;">
+                        <h2>Base data</h2>
+                        <div class="domain-field ">
+                            <label for="domain">Domain name: </label>
+                            <input name="domain_name" id="domain_name" class="form-control" type="text" ><br>
+                            <label for="admin_mail">Admin mail: </label>
+                            <input name="admin_mail" id="admin_mail" class="form-control" type="email">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm ns_record_wrapper" style="background-color:#438a90;">
+                        <h2>Name Servers</h2>
+                        <button type="button" id="add_ns" class="btn btn-info">Add+</button>
+                        <div class="ns_record">
+                            <input type="text" name="ns1" id="ns1" placeholder="name server" required>
+                            <select name="ns_ip_addr_type1" id="ns_ip_addr_type1"  required>
+                                <option disabled selected>IP record type</option>
+                                <option value="A">A</option>
+                                <option value="AAAA">AAAA</option>
+                            </select >
+                            <input type="text" name="ns_ip1" id="ns_ip1" placeholder="ip address" required>
+                            <!--1209600 sec. or 2 weeks  max ttl for name server-->
+                            <input type="number" name="ns_ttl1" id="ns_ttl1" placeholder="time to live" min="0" max="1209600">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="hosts" class="tabcontent">
+                <div class="row">
+                    <div class="col-sm host_record_wrapper" style="background-color:#438a90;">
+                        <h2>Hosts </h2>
+                        <button type="button" id="add_host" class="btn btn-info">Add+</button>
+                        <div class="host_record">
+                            <input type="text" name="host_name1" id="host_name1" placeholder="host name" required>
+                            <select name="host_name_ip_addr_type1" id="host_name_ip_addr_type1"  required>
+                                <option disabled selected>IP record type</option>
+                                <option value="A">A</option>
+                                <option value="AAAA">AAAA</option>
+                            </select >
+                            <input type="text" name="host_name_ip1" id="host_name_ip1" placeholder="ip address" required>
+                            <!--86400 sec. or 1 day  max ttl for host name-->
+                            <input type="number" name="host_name_ttl1" id="host_name_ttl1" placeholder="time to live" min="0" max="86400">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="mail" class="tabcontent">
+                <div class="row">
+                    <div class="col-sm mail_record_wrapper" style="background-color:#438a90;">
+                        <h2>Mails </h2>
+                        <button type="button" id="add_mail" class="btn btn-info">Add+</button>
+                        <div class="mail_record">
+                            <input name="mail_host1" id="mail_host1" type="text" placeholder="mail host name">
+                            <input name="mail_ip_host1" id="mail_ip_host1" type="text" placeholder="mail host ip address">
+                            <input name="mail_preference1" id="mail_preference1" type="number" min="0" max="65535" placeholder="preference">
+                            <!--3024000 sec. or 5 weeks  max ttl for mail-->
+                            <input type="number" name="mail_ttl1" id="mail_ttl1" placeholder="time to live" min="0" max="3024000">
+                            <label class="checkbox-inline">
+                                <input type="checkbox" class="external-check  form-check-input" name="external1" value="true">External record
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="domain" class="tabcontent">
+                <p>Other records soon...</p>
+            </div>
+        </div>
+    </form>
+    <button type="submit" id="btn-submit" class="btn btn-success" form="record_form">Submit</button>
+
 </body>
-<style>
-	.col-sm-3{
-		border-radius: 20px;
-        padding-top: 10px;
-		padding-bottom: 10px;
-        margin-bottom: 20px;
-        margin-top: 20px;
-	}
-</style>
 </html>
