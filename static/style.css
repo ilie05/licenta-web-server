@@ -1,87 +1,91 @@
 body {
-  font-family: "Lato", sans-serif;
+    font-family: "Lato", sans-serif;
 }
 
 /* Style the tab */
 .tab {
-  float: left;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-  width: 30%;
-  height: 100%;
+    float: left;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    width: 30%;
+    height: 100%;
 }
 
 /* Style the buttons inside the tab */
 .tab button {
-  display: block;
-  background-color: inherit;
-  color: black;
-  padding: 22px 16px;
-  width: 100%;
-  border: none;
-  outline: none;
-  text-align: left;
-  cursor: pointer;
-  transition: 0.3s;
-  font-size: 17px;
+    display: block;
+    background-color: inherit;
+    color: black;
+    padding: 22px 16px;
+    width: 100%;
+    border: none;
+    outline: none;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 17px;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-  background-color: #ddd;
+    background-color: #ddd;
 }
 
 /* Create an active/current "tab button" class */
 .tab button.active {
-  background-color: #ccc;
+    background-color: #ccc;
 }
 
 /* Style the tab content */
 .tabcontent {
-  float: left;
-  padding: 0px 12px;
-  border: 1px;
-  width: 70%;
-  border-left: none;
-  height: 100%;
-} 
-
-.ns_record, .host_record, .mail_record{
-	padding: 10px;
-	margin: 2px;
-	width: 80%;
-	margin: 0 auto;
+    float: left;
+    padding: 0 12px;
+    border: 1px;
+    width: 70%;
+    border-left: none;
+    height: 100%;
 }
 
-.btn-info{
-	margin-left: 3%;
+.ns_record, .host_record, .mail_record {
+    padding: 10px;
+    margin: 2px;
+    width: 80%;
+    margin: 0 auto;
 }
 
-.col-sm{
-	border-radius: 20px;
+.btn-info {
+    margin-left: 3%;
+}
+
+.col-sm {
+    border-radius: 20px;
     padding-top: 20px;
-	padding-bottom: 20px;
+    padding-bottom: 20px;
     margin-bottom: 20px;
 }
 
-h2{
-	padding-bottom: 25px;
-	width: 25%;
-	margin: 0 auto;
+h2 {
+    padding-bottom: 25px;
+    width: 25%;
+    margin: 0 auto;
 }
 
-.domain-field{
-	width: 45%;
-	margin:  auto; 
+.domain-field {
+    width: 45%;
+    margin: auto;
 }
 
-input{
-	margin:10px 10px;
+input {
+    margin: 10px 10px;
 }
 
-#btn-submit{
-  width: 30%;
-  position:absolute;
-  bottom: 0%;
-  left: 0;
+#btn-submit {
+    width: 30%;
+    position: absolute;
+    bottom: 0%;
+    left: 0;
+}
+
+input:disabled, select:disabled {
+    opacity: 0.3;
 }
