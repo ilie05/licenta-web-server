@@ -190,7 +190,7 @@ function mySubmitFunction() {
                     mail_ip_host: mail_ip_host.value,
                     mail_preference: mail_preference.value,
                     mail_ttl: mail_ttl.value,
-                    external: true
+                    external: false
                 })
             }
         } else {
@@ -199,7 +199,7 @@ function mySubmitFunction() {
                     mail_host: mail_host.value,
                     mail_preference: mail_preference.value,
                     mail_ttl: mail_ttl.value,
-                    external: false
+                    external: true
                 })
             }
         }
@@ -222,7 +222,7 @@ function mySubmitFunction() {
 
 function ajaxRequest(data_to_send) {
     $.ajax({
-        url: '/dream',
+        url: '/record',
         data: JSON.stringify(data_to_send),
         method: 'POST',
         dataType: 'text',
@@ -231,7 +231,7 @@ function ajaxRequest(data_to_send) {
             console.log("Ajax response success function!");
             console.log(data);
             window.document.write(data);
-            window.history.pushState("", "", '/dream');
+            window.history.pushState("", "", '/inserted');
         },
         error: function (data) {
             console.log("Ajax response error function!");

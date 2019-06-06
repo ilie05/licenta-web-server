@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+from validation import Validation
 import re
 import json
 import sys
@@ -12,9 +13,6 @@ collection = db['zones']
 
 app = Flask(__name__)
 
-REGEX_ipv4 = r'^\d{1,3}(\.\d{1,3}){3}$'
-REGEX_ipv6 = r'^[a-fA-F0-9]{1,4}(::?[a-fA-F0-9]{1,4}){1,7}$'
-
 
 @app.route('/')
 def index():
@@ -23,65 +21,156 @@ def index():
 
 @app.route('/record', methods=['POST', 'GET'])
 def record():
-    message = process_form(request.form)
-    if not message:
-        message = "Invalid record type!"
-    return render_template("inserted.html", message=message)
-
-
-@app.route('/test')
-def test():
-    return render_template("test.html")
-
-
-@app.route('/dream', methods=['POST', 'GET'])
-def submited():
     if request.method == 'POST':
-        # name = request.form.to_dict()['name']
-        # print(request.form.to_dict())
-        #data = json.loads(request.data)
-        print(request.get_json())
-        return render_template("dream.html", message='some message!!!!!')
+        process_form(request.get_json())
+        return render_template("inserted.html", message='some message!!!!!')
     else:
-        return redirect(url_for('test'))
-    #return data
+        return render_template('404_not_found.html')
 
 
-def process_form(form):
+def process_form(data):
+    zone_doc = {}
+    error = {}
 
-    obj = ''
+    domain_details = data['domain_details']
+    ns_records = data['ns_records']
+    hosts_records = data['hosts_records']
+    mails_records = data['mails_records']
 
-    for key, value in form.to_dict().items():
-        obj += '{0}:  {1}<br>'.format(key, value)
 
-    return obj
 
-    if form['ip_addr_type'] == 'A':
-        if re.match(REGEX_ipv4, request.form['ip_address']):
-            ip_address = form['ip_address']
+    # check domain name
+    error['domain_details'] = {}
+    zone_doc['domain_details'] = {}
 
+    try:
+        zone_doc['domain_details']['domain_name'] = Validation.check_domain_name(domain_details['domain_name'])
+    except Exception as e:
+        error['domain_details']['domain_name'] = str(e)
+
+    # check admin email
+    try:
+        zone_doc['domain_details']['admin_mail'] = Validation.check_email(domain_details['admin_mail'])
+    except Exception as e:
+        error['domain_details']['admin_mail'] = str(e)
+
+    try:
+        zone_doc['domain_details']['domain_ttl'] = Validation.check_ttl(domain_details['domain_ttl'], 3024000)
+    except Exception as e:
+        error['domain_details']['domain_ttl'] = str(e)
+
+    # check name server records
+    error['ns_records'] = []
+    zone_doc['ns_records'] = []
+    temp_dict = {}
+
+    for i, record in enumerate(ns_records):
+        try:
+            temp_dict['ns'] = Validation.check_domain_name(record['ns'])
+        except Exception as e:
+            error['ns_records'][i]['ns'] = str(e)
+
+        if record['ns_ip_addr_type'] == 'A':
+            try:
+                temp_dict['ns_ip_addr_type'] = 'A'
+                temp_dict['ns_ip'] = Validation.check_ipv4(record['ns_ip'])
+            except Exception as e:
+                error['ns_records'][i]['ns_ip'] = str(e)
+        elif record['ns_ip_addr_type'] == 'AAAA':
+            try:
+                temp_dict['ns_ip_addr_type'] = 'AAAA'
+                temp_dict['ns_ip'] = Validation.check_ipv6(record['ns_ip'])
+            except Exception as e:
+                error['ns_records'][i]['ns_ip'] = str(e)
         else:
-            return "Invalid ipv4 address"
-    elif form['ip_addr_type'] == 'AAAA':
-        if re.match(REGEX_ipv6, request.form['ip_address']):
-            ip_address = form['ip_address']
-        else:
-            return "Invalid ipv6 address"
+            error['ns_records'][i]['ns_ip_addr_type'] = 'Wrong type of Ip address!'
 
-    zone_doc = {
-                'domain': form['domain'],
-                'admin_mail': form['admin_mail'],
-                'class_type': form['class_type'],
-                'ip_addr_type': form['ip_addr_type'],
-                'ip_address': ip_address,
-                'ip_host': form['ip_host'],
-                'mail_host': form['mail_host'],
-                'mail_ip_host': form['mail_ip_host'],
-                'mail_priority': form['mail_priority'],
-                'last_modify': datetime.datetime.utcnow()
-                }
-    if form['ttl'] != '':
-        zone_doc['ttl'] = form['ttl']
+        try:
+            temp_dict['ns_ttl'] = Validation.check_ttl(record['ns_ttl'], 1209600)
+        except Exception as e:
+            error['ns_records'][i]['ns_ttl'] = str(e)
+
+        zone_doc['ns_records'].append(temp_dict)
+        temp_dict = {}
+
+    # check host records
+    error['hosts_records'] = []
+    zone_doc['hosts_records'] = []
+    temp_dict = {}
+
+    for i, record in enumerate(hosts_records):
+        try:
+            temp_dict['host_name'] = Validation.check_domain_name(record['host_name'])
+        except Exception as e:
+            error['hosts_records'][i]['host_name'] = str(e)
+
+        if record['host_name_ip_addr_type'] == 'A':
+            try:
+                temp_dict['host_name_ip_addr_type'] = 'A'
+                temp_dict['host_name_ip'] = Validation.check_ipv4(record['host_name_ip'])
+            except Exception as e:
+                error['hosts_records'][i]['host_name_ip'] = str(e)
+        elif record['host_name_ip_addr_type'] == 'AAAA':
+            try:
+                temp_dict['host_name_ip_addr_type'] = 'AAAA'
+                temp_dict['host_name_ip'] = Validation.check_ipv6(record['host_name_ip'])
+            except Exception as e:
+                error['hosts_records'][i]['host_name_ip'] = str(e)
+        else:
+            error['hosts_records'][i]['host_name_ip_addr_type'] = 'Wrong type of Ip address!'
+
+        try:
+            temp_dict['host_name_ttl'] = Validation.check_ttl(record['host_name_ttl'], 86400)
+        except Exception as e:
+            error['hosts_records'][i]['host_name_ttl'] = str(e)
+
+        zone_doc['hosts_records'].append(temp_dict)
+        temp_dict = {}
+
+    # check mail records
+    error['mails_records'] = []
+    zone_doc['mails_records'] = []
+    temp_dict = {}
+
+    for i, record in enumerate(hosts_records):
+        if type(record['external']) != bool:
+            temp_dict['external'] = 'Wrong Type External Record!'
+            continue
+
+        if not record['external']:
+            if record['mail_addr_type'] == 'A':
+                try:
+                    temp_dict['mail_addr_type'] = 'A'
+                    temp_dict['mail_ip_host'] = Validation.check_ipv4(record['mail_ip_host'])
+                except Exception as e:
+                    error['mails_records'][i]['mail_ip_host'] = str(e)
+            elif record['mail_addr_type'] == 'AAAA':
+                try:
+                    temp_dict['mail_addr_type'] = 'AAAA'
+                    temp_dict['mail_ip_host'] = Validation.check_ipv6(record['mail_ip_host'])
+                except Exception as e:
+                    error['mails_records'][i]['mail_ip_host'] = str(e)
+            else:
+                error['mails_records'][i]['mail_addr_type'] = 'Wrong type of Ip address!'
+
+        try:
+            temp_dict['mail_host'] = Validation.check_domain_name(record['mail_host'])
+        except Exception as e:
+            error['mails_records'][i]['mail_host'] = str(e)
+
+        try:
+            temp_dict['mail_ttl'] = Validation.check_ttl(record['mail_ttl'], 3024000)
+        except Exception as e:
+            error['mails_records'][i]['mail_ttl'] = str(e)
+
+        try:
+            temp_dict['mail_preference'] = Validation.check_ttl(record['mail_preference'], 65535)
+        except Exception as e:
+            error['mails_records'][i]['mail_preference'] = str(e).replace('TTL', 'Preference')
+
+        zone_doc['mails_records'].append(temp_dict)
+        temp_dict = {}
+
 
     collection.insert_one(zone_doc)
     return zone_doc

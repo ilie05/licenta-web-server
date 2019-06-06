@@ -63,16 +63,16 @@ class Validation(object):
         raise Exception("\'{}\' is not a valid IPv6 address!".format(address))
 
     @staticmethod
-    def check_ttl(ttl: str) -> int:
+    def check_ttl(ttl: str, max_val: int) -> int:
         try:
             ttl = int(ttl)
-        except :
+        except:
             raise Exception("\'{}\' must be an integer value!".format(ttl))
 
-        if ttl in range(2147483648):
+        if ttl in range(max_val + 1):
             return ttl
 
-        raise Exception("TTL must be in [0, 2147483647] range!")
+        raise Exception("TTL must be in [0, {0}] range!".format(max_val))
 
 
 if __name__ == '__main__':
