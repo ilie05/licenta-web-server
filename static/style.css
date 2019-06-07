@@ -1,5 +1,6 @@
 body {
     font-family: "Lato", sans-serif;
+    margin: 0 auto;
 }
 
 /* Style the tab */
@@ -7,7 +8,7 @@ body {
     float: left;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
-    width: 30%;
+    width: 28%;
     height: 100%;
 }
 
@@ -41,24 +42,23 @@ body {
     float: left;
     padding: 0 12px;
     border: 1px;
-    width: 70%;
+    width: 72%;
     border-left: none;
     height: 100%;
 }
 
 .ns_record, .host_record, .mail_record {
     padding: 10px;
-    margin: 2px;
     width: 80%;
     margin: 0 auto;
 }
 
 .btn-info {
-    margin-left: 3%;
+    margin-left: 2%;
 }
 
 .col-sm {
-    border-radius: 20px;
+    border-radius: 5px;
     padding-top: 20px;
     padding-bottom: 20px;
     margin-bottom: 20px;
@@ -70,22 +70,29 @@ h2 {
     margin: 0 auto;
 }
 
-.domain-field {
-    width: 45%;
-    margin: auto;
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
 }
 
-input {
-    margin: 10px 10px;
+input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
 }
 
 #btn-submit {
     width: 30%;
     position: absolute;
-    bottom: 0%;
+    bottom: 0;
     left: 0;
 }
 
 input:disabled, select:disabled {
-    opacity: 0.3;
+    opacity: 0;
 }
+
+.domain-field{
+    margin: auto;
+}
+

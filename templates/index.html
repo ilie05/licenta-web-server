@@ -5,9 +5,10 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
     <script type="text/javascript" src="{{ url_for('static', filename = 'script.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}">
 </head>
@@ -26,45 +27,45 @@
 </div>
 
 <form id="record_form" onsubmit="return mySubmitFunction()" method="post">
-    <button type="submit" onclick="">asd</button>
     <div class="container-fluid">
         <div id="domain" class="tabcontent">
             <div class="row">
-                <div class="col-sm" style="background-color:#3fff7d;">
+                <div class="col-sm" style="background-color:#e4fbf9;">
                     <h2>Base data</h2>
-                    <div class="domain-field ">
-                        <label for="domain">Domain name
-                            <input name="domain_name" id="domain_name" class="form-control" type="text"
-                                   pattern="[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+" required
-                                   oninvalid="this.setCustomValidity('Invalid domain name!')"
-                                   oninput="this.setCustomValidity('')"></label>
-                        <label for="admin_mail">Admin mail
-                            <input name="admin_mail" id="admin_mail" class="form-control" type="email" required>
-                        </label>
-                        <label for="domain_ttl">Default TTL
-                            <input name="domain_ttl" id="domain_ttl" type="number" min="0" max="3024000"
-                                   placeholder="TTL" required></label>
+                    <div class="domain-field form-inline">
+                        <label for="domain_name">Domain name</label>
+                        <input name="domain_name" id="domain_name" class="form-control" type="text"
+                               pattern="[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+" required
+                               oninvalid="this.setCustomValidity('Invalid domain name!')"
+                               oninput="this.setCustomValidity('')">
+                        <label for="admin_mail">Admin mail</label>
+                        <input name="admin_mail" id="admin_mail" class="form-control" type="email" required>
+
+                        <label for="domain_ttl">Default TTL</label>
+                        <input name="domain_ttl" id="domain_ttl" class="form-control" type="number" min="0"
+                               max="3024000"
+                               placeholder="Time to live..." required>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm ns_record_wrapper" style="background-color:#438a90;">
                     <h2>Name Servers</h2>
-                    <button type="button" id="add_ns" class="btn btn-info">Add+</button>
-                    <div class="ns_record">
-                        <input type="text" name="ns1" id="ns1" placeholder="name server" required
+                    <button type="button" id="add_ns" class="btn btn-info">New Record</button>
+                    <div class="ns_record form-inline">
+                        <input type="text" name="ns1" id="ns1" placeholder="Name server..." required class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
 
-                        <select name="ns_ip_addr_type1" id="ns_ip_addr_type1" required>
+                        <select name="ns_ip_addr_type1" id="ns_ip_addr_type1" required class="form-control">
                             <option disabled selected value="">Ip record type</option>
                             <option value="A">A</option>
                             <option value="AAAA">AAAA</option>
                         </select>
 
-                        <input type="text" name="ns_ip1" id="ns_ip1" placeholder="ip address" required>
+                        <input type="text" name="ns_ip1" id="ns_ip1" placeholder="Ip address..." required class="form-control">
                         <!--1209600 sec. or 2 weeks  max ttl for name server-->
-                        <input type="number" name="ns_ttl1" id="ns_ttl1" placeholder="time to live" min="0"
-                               max="1209600">
+                        <input type="number" name="ns_ttl1" id="ns_ttl1" placeholder="Time to live..." min="0"
+                               max="1209600" class="form-control">
                     </div>
                 </div>
             </div>
@@ -74,19 +75,19 @@
             <div class="row">
                 <div class="col-sm host_record_wrapper" style="background-color:#438a90;">
                     <h2>Hosts </h2>
-                    <button type="button" id="add_host" class="btn btn-info">Add+</button>
-                    <div class="host_record">
-                        <input type="text" name="host_name1" id="host_name1" placeholder="host name" required
+                    <button type="button" id="add_host" class="btn btn-info">New Record</button>
+                    <div class="host_record form-inline">
+                        <input type="text" name="host_name1" id="host_name1" placeholder="Host name..." required class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
-                        <select name="host_name_ip_addr_type1" id="host_name_ip_addr_type1" required>
+                        <select name="host_name_ip_addr_type1" id="host_name_ip_addr_type1" required class="form-control">
                             <option disabled selected value="">IP record type</option>
                             <option value="A">A</option>
                             <option value="AAAA">AAAA</option>
                         </select>
-                        <input type="text" name="host_name_ip1" id="host_name_ip1" placeholder="ip address" required>
+                        <input type="text" name="host_name_ip1" id="host_name_ip1" placeholder="Ip address..." required class="form-control">
                         <!--86400 sec. or 1 day  max ttl for host name-->
-                        <input type="number" name="host_name_ttl1" id="host_name_ttl1" placeholder="time to live"
-                               min="0" max="86400">
+                        <input type="number" name="host_name_ttl1" id="host_name_ttl1" placeholder="Time to live..."
+                               min="0" max="86400" class="form-control">
                     </div>
                 </div>
             </div>
@@ -96,23 +97,23 @@
             <div class="row">
                 <div class="col-sm mail_record_wrapper" style="background-color:#438a90;">
                     <h2>Mails </h2>
-                    <button type="button" id="add_mail" class="btn btn-info">Add+</button>
-                    <div class="mail_record">
-                        <input name="mail_host1" id="mail_host1" type="text" placeholder="mail host name"
+                    <button type="button" id="add_mail" class="btn btn-info">New Record</button>
+                    <div class="mail_record form-inline">
+                        <input name="mail_host1" id="mail_host1" type="text" placeholder="Mail host name..." class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
-                        <select name="mail_addr_type1" id="mail_addr_type1">
+                        <select name="mail_addr_type1" id="mail_addr_type1" class="form-control">
                             <option disabled selected value="">IP record type</option>
                             <option value="A">A</option>
                             <option value="AAAA">AAAA</option>
                         </select>
-                        <input name="mail_ip_host1" id="mail_ip_host1" type="text" placeholder="mail host ip address">
+                        <input name="mail_ip_host1" id="mail_ip_host1" type="text" placeholder="Mail host ip address..." class="form-control">
                         <input name="mail_preference1" id="mail_preference1" type="number" min="0" max="65535"
-                               placeholder="preference">
+                               placeholder="Preference..." class="form-control">
                         <!--3024000 sec. or 5 weeks  max ttl for mail-->
-                        <input type="number" name="mail_ttl1" id="mail_ttl1" placeholder="time to live" min="0"
-                               max="3024000">
-                        <label class="checkbox-inline">
-                            <input type="checkbox" class="external-check  form-check-input" name="external1">External
+                        <input type="number" name="mail_ttl1" id="mail_ttl1" placeholder="Time to live..." min="0"
+                               max="3024000" class="form-control">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="external-check form-check-input" name="external1">External
                             record
                         </label>
                     </div>
@@ -125,6 +126,6 @@
         </div>
     </div>
 </form>
-<button type="button" id="btn-submit" class="btn btn-success">Submit</button>
+<button type="submit" id="btn-submit" class="btn btn-success" form="record_form">Submit</button>
 </body>
 </html>
