@@ -64,6 +64,9 @@ class Validation(object):
 
     @staticmethod
     def check_ttl(ttl: str, max_val: int) -> int:
+        if not ttl:
+            return 0
+
         try:
             ttl = int(ttl)
         except:
