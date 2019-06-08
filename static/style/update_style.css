@@ -1,0 +1,23 @@
+body {
+    font-family: "Lato", sans-serif;
+    margin: 0 auto;
+}
+
+.row {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.col-sm-8 {
+    border: 1px double black;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+input {
+    margin: 4px !important;
+}
+
+.btn-edit, btn-del{
+    margin: 5px;
+}

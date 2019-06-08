@@ -1,4 +1,4 @@
-let counterNsRecords = 3;
+let counterNsRecords = 2;
 let counterHostRecords = 2;
 let counterMailRecords = 2;
 
@@ -132,8 +132,6 @@ function mySubmitFunction() {
         let ns_ip = $('#ns_ip' + (index + 1))[0];
         let ns_ttl = $('#ns_ttl' + (index + 1))[0];
 
-        console.log(ns);
-
         if (index > 0) {
             if (ns.value != '' && ns_ip_addr_type.val() != '' && ns_ip.value != '')
                 ns_records.push({
@@ -163,15 +161,7 @@ function mySubmitFunction() {
         let host_name_ip = $('#host_name_ip' + (index + 1))[0];
         let host_name_ttl = $('#host_name_ttl' + (index + 1))[0];
 
-        if (index > 0) {
-            if (host_name.value != '' && host_name_ip_addr_type.val() != '' && host_name_ip.value != '')
-                hosts_records.push({
-                    host_name: host_name.value,
-                    host_name_ip_addr_type: host_name_ip_addr_type.val(),
-                    host_name_ip: host_name_ip.value,
-                    host_name_ttl: host_name_ttl.value
-                });
-        } else {
+        if (host_name.value != '' && host_name_ip_addr_type.val() != '' && host_name_ip.value != '') {
             hosts_records.push({
                 host_name: host_name.value,
                 host_name_ip_addr_type: host_name_ip_addr_type.val(),
@@ -180,7 +170,6 @@ function mySubmitFunction() {
             });
         }
     });
-
 
     //get MAIL Records
     let mails = $('.mail_record_wrapper .mail_record');
@@ -251,13 +240,5 @@ function ajaxRequest(data_to_send) {
 
             //window.document.write(data.responseText)
         }
-        // statusCode: {
-        //     400: function () {
-        //         alert("page not found");
-        //     },
-        //     200: function () {
-        //         alert("page is found");
-        //     }
-        // }
     });
 }

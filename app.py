@@ -25,8 +25,9 @@ def record():
     if request.method == 'POST':
         try:
             data = request.get_json()
-            data = process_form(data)
             print(data)
+            data = process_form(data)
+
             return render_template("inserted.html", message='some message!!!!!')
         except:
             print("Exeption! Bad request")
@@ -54,7 +55,6 @@ def get_domain():
     if request.method == 'POST':
         try:
             domain_name = request.get_json()
-            print(domain_name['domain_name'])
             domain_record = collection.find_one({'domain_details.domain_name': domain_name['domain_name']})
             domain_record.pop('_id', None)
             return make_response(jsonify(domain_record), 200)
@@ -96,6 +96,7 @@ def process_form(data):
     # check admin email
     try:
         zone_doc['domain_details']['admin_mail'] = Validation.check_email(domain_details['admin_mail'], domain_details['domain_name'])
+        zone_doc['domain_details']['original_admin_mail'] = domain_details['admin_mail']
     except Exception as e:
         error['domain_details']['admin_mail'] = str(e)
 

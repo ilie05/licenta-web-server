@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <title>Update</title>
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'menu.css') }}">
+    <link rel="stylesheet" href="/static/style/menu.css">
+    <link rel="stylesheet" href="/static/style/update_style.css">
     <script src="/static/script-update.js"></script>
 </head>
 <body>
@@ -14,12 +20,46 @@
     <li><a href="/">Home</a></li>
     <li><a class="active" href="/update">Update</a></li>
 </ul>
-<h1>Update page!</h1>
-<select name="domain_name" id="domain_name">
-    <option disabled selected value="">Select domain name</option>
-    {% for item in domain_names %}
-        <option value="{{ item }}">{{ item }}</option>
-    {% endfor %}
-</select>
+
+<div class="fluid_container">
+    <form class="form-group">
+        <div class="row">
+            <div class="col-sm-1">
+            </div>
+            <div class="col-sm-3">
+                <h1>Update page!</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-8">
+                <select class="form-control" name="domain_name" id="domain_name">
+                    <option disabled selected value="">Select domain name</option>
+                    {% for item in domain_names %}
+                        <option value="{{ item }}">{{ item }}</option>
+                    {% endfor %}
+                </select>
+            <div class="form-inline">
+                <input class="form-control">
+            </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-2">
+                <h4>Name server records</h4>
+            </div>
+
+            <div class="col-sm-8 ns_record_wrapper">
+
+            </div>
+        </div>
+</div>
+</form>
+
+</div>
 </body>
 </html>
