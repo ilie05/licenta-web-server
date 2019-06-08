@@ -1,4 +1,4 @@
-let counterNsRecords = 2;
+let counterNsRecords = 3;
 let counterHostRecords = 2;
 let counterMailRecords = 2;
 
@@ -121,12 +121,18 @@ function mySubmitFunction() {
     let name_servers = $('.ns_record_wrapper .ns_record');
     let ns_records = [];
 
-    name_servers.each((index) => {
+    let index = 0;
+    while (name_servers.length >= index) {
+        if (!$('#ns' + (index + 1)).length) {
+            index++;
+            continue;
+        }
         let ns = $('#ns' + (index + 1))[0];
         let ns_ip_addr_type = $('#ns_ip_addr_type' + (index + 1) + ' :selected');
         let ns_ip = $('#ns_ip' + (index + 1))[0];
         let ns_ttl = $('#ns_ttl' + (index + 1))[0];
 
+        console.log(ns);
 
         if (index > 0) {
             if (ns.value != '' && ns_ip_addr_type.val() != '' && ns_ip.value != '')
@@ -144,8 +150,8 @@ function mySubmitFunction() {
                 ns_ttl: ns_ttl.value
             });
         }
-    });
-
+        index++;
+    }
 
     //get HOST Records
     let hosts = $('.host_record_wrapper .host_record');
@@ -220,7 +226,7 @@ function mySubmitFunction() {
         mails_records: mails_records
     };
 
-    ajaxRequest(obj_to_send);
+   ajaxRequest(obj_to_send);
 
     return false;
 }
@@ -242,7 +248,16 @@ function ajaxRequest(data_to_send) {
         error: function (data) {
             console.log("Ajax response error function!");
             console.log(data);
+
             //window.document.write(data.responseText)
         }
+        // statusCode: {
+        //     400: function () {
+        //         alert("page not found");
+        //     },
+        //     200: function () {
+        //         alert("page is found");
+        //     }
+        // }
     });
 }
