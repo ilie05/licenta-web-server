@@ -8,16 +8,35 @@ body {
     margin-top: 15px;
 }
 
-.col-sm-8 {
-    border: 1px double black;
-    border-radius: 5px;
-    padding: 20px;
+h4 {
+    padding-left: 20px;
+}
+
+.col-sm-9 {
+    border-bottom: 1px double gray;
+
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 input {
     margin: 4px !important;
 }
 
-.btn-edit, btn-del{
-    margin: 5px;
+.btn-edit, btn-del {
+    margin: 15px;
+}
+
+.ns_record, .host_record, .mail_record {
+    /*padding: 0px 5px 12px 5px;*/
+    border-radius: 10px;
+    border: 1px solid grey;
+    background-color: lightgray;
+    margin: 10px;
+    width: max-content;
+    /*height: 60px;*/
+}
+
+input[type=number] {
+    -moz-appearance: textfield; /* Firefox */
 }
