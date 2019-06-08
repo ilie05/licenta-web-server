@@ -20,11 +20,15 @@ class Validation(object):
         if domain == '':
             if '@' in email:
                 if regex_res:
-                    return email
+                    return email.replace('@', '.')
                 else:
                     raise Exception("\'{}\' is not a valid email address!".format(original_email))
             else:
-                return email
+                pattern = r'^{0}(\.{0})*\.?$'.format(REGEX_label)
+                if re.match(pattern, email):
+                    return email
+                else:
+                    raise Exception("\'{}\' is not a valid email address!".format(original_email))
 
         email = email.split('@')
         if len(email) > 1:
@@ -35,7 +39,7 @@ class Validation(object):
                     return '.'.join(email)
             else:
                 raise Exception("\'{}\' is not a valid email address!".format(original_email))
-        return str(''.join(email))
+        return str(''.join(email)).replace('@', '.')
 
     @staticmethod
     def check_domain_name(name: str) -> str:
@@ -80,19 +84,19 @@ class Validation(object):
 
 if __name__ == '__main__':
     try:
-        res1 = Validation.check_email('mai@l')
+        res1 = Validation.check_email('maimsail.com')
         print(res1)
     except Exception as e:
         print(str(e))
 
-    try:
-        res2 = Validation.check_domain_name('a@sds.ds')
-        print(res2)
-    except Exception as e:
-        print(str(e))
-
-    try:
-        res3 = Validation.check_ttl('-8')
-        print(res3)
-    except Exception as e:
-        print(str(e))
+    # try:
+    #     res2 = Validation.check_domain_name('a@sds.ds')
+    #     print(res2)
+    # except Exception as e:
+    #     print(str(e))
+    #
+    # try:
+    #     res3 = Validation.check_ttl('-8')
+    #     print(res3)
+    # except Exception as e:
+    #     print(str(e))

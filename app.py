@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask import jsonify
 from validation import Validation
 import re
 import json
@@ -40,6 +41,31 @@ def bad_request():
     return render_template('404_not_found.html')
 
 
+@app.route('/update')
+def update():
+    domains = collection.find({}, {'domain_details': 1})
+
+    domain_names = [k['domain_details']['domain_name'] for k in domains]
+    return render_template('update.html', domain_names=domain_names)
+
+
+@app.route('/getDomain', methods=['POST', 'GET'])
+def get_domain():
+    if request.method == 'POST':
+        try:
+            domain_name = request.get_json()
+            print(domain_name['domain_name'])
+            domain_record = collection.find_one({'domain_details.domain_name': domain_name['domain_name']})
+            domain_record.pop('_id', None)
+            return make_response(jsonify(domain_record), 200)
+        except:
+            return make_response(jsonify({'data': 'some shit!'}), 400)
+    elif request.method == 'GET':
+        print("GET getDomain method!")
+    else:
+        return render_template('400_bad_request.html')
+
+
 def process_form(data):
     zone_doc = {}
     error = {}
@@ -69,7 +95,7 @@ def process_form(data):
 
     # check admin email
     try:
-        zone_doc['domain_details']['admin_mail'] = Validation.check_email(domain_details['admin_mail'])
+        zone_doc['domain_details']['admin_mail'] = Validation.check_email(domain_details['admin_mail'], domain_details['domain_name'])
     except Exception as e:
         error['domain_details']['admin_mail'] = str(e)
 
