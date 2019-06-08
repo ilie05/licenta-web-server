@@ -11,9 +11,14 @@
 
     <script type="text/javascript" src="{{ url_for('static', filename = 'script.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'menu.css') }}">
 </head>
 <body>
 
+<ul>
+  <li><a class="active" href="/">Home</a></li>
+  <li><a href="/update">Update</a></li>
+</ul>
 <h1>DNS Manager</h1>
 <h2></h2>
 
@@ -77,14 +82,14 @@
                     <h2>Hosts </h2>
                     <button type="button" id="add_host" class="btn btn-info">New Record</button>
                     <div class="host_record form-inline">
-                        <input type="text" name="host_name1" id="host_name1" placeholder="Host name..." required class="form-control"
+                        <input type="text" name="host_name1" id="host_name1" placeholder="Host name..." class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
-                        <select name="host_name_ip_addr_type1" id="host_name_ip_addr_type1" required class="form-control">
+                        <select name="host_name_ip_addr_type1" id="host_name_ip_addr_type1" class="form-control">
                             <option disabled selected value="">IP record type</option>
                             <option value="A">A</option>
                             <option value="AAAA">AAAA</option>
                         </select>
-                        <input type="text" name="host_name_ip1" id="host_name_ip1" placeholder="Ip address..." required class="form-control">
+                        <input type="text" name="host_name_ip1" id="host_name_ip1" placeholder="Ip address..." class="form-control">
                         <!--86400 sec. or 1 day  max ttl for host name-->
                         <input type="number" name="host_name_ttl1" id="host_name_ttl1" placeholder="Time to live..."
                                min="0" max="86400" class="form-control">

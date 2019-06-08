@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'menu.css') }}">
+    <script src="/static/script-update.js"></script>
+</head>
+<body>
+<ul>
+    <li><a href="/">Home</a></li>
+    <li><a class="active" href="/update">Update</a></li>
+</ul>
+<h1>Update page!</h1>
+<select name="domain_name" id="domain_name">
+    <option disabled selected value="">Select domain name</option>
+    {% for item in domain_names %}
+        <option value="{{ item }}">{{ item }}</option>
+    {% endfor %}
+</select>
+</body>
+</html>
