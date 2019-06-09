@@ -222,9 +222,14 @@ function setButtonsAndInputs() {
 
 function saveFunction() {
     let name_servers = $('.ns_record_wrapper .ns_record');
-    //console.log(name_servers.length);
     let ns_records = getNsRecords(name_servers.length);
-    console.log(ns_records);
+
+    let hosts = $('.host_record_wrapper .host_record');
+    let hosts_records = getHostRecords(hosts.length);
+
+    let mails = $('.mail_record_wrapper .mail_record');
+    let mails_records = getMailRecords(mails.length);
+
     return false;
 }
 

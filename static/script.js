@@ -51,58 +51,11 @@ function mySubmitFunction() {
 
     //get HOST Records
     let hosts = $('.host_record_wrapper .host_record');
-    let hosts_records = [];
-
-    hosts.each((index) => {
-        let host_name = $('#host_name' + (index + 1))[0];
-        let host_name_ip_addr_type = $('#host_name_ip_addr_type' + (index + 1) + ' :selected');
-        let host_name_ip = $('#host_name_ip' + (index + 1))[0];
-        let host_name_ttl = $('#host_name_ttl' + (index + 1))[0];
-
-        if (host_name.value != '' && host_name_ip_addr_type.val() != '' && host_name_ip.value != '') {
-            hosts_records.push({
-                host_name: host_name.value,
-                host_name_ip_addr_type: host_name_ip_addr_type.val(),
-                host_name_ip: host_name_ip.value,
-                host_name_ttl: host_name_ttl.value
-            });
-        }
-    });
+    let hosts_records = getHostRecords(hosts.length);
 
     //get MAIL Records
     let mails = $('.mail_record_wrapper .mail_record');
-    let mails_records = [];
-
-    mails.each((index) => {
-        let mail_host = $('#mail_host' + (index + 1))[0];
-        let mail_addr_type = $('#mail_addr_type' + (index + 1) + ' :selected');
-        let mail_ip_host = $('#mail_ip_host' + (index + 1))[0];
-        let mail_preference = $('#mail_preference' + (index + 1))[0];
-        let mail_ttl = $('#mail_ttl' + (index + 1))[0];
-        let external = $('[name=external' + (index + 1) + ']');
-
-        if (!external.is(':checked')) {
-            if (mail_host.value != '' && mail_addr_type.val() != '' && mail_ip_host.value != '' && mail_preference.value != '') {
-                mails_records.push({
-                    mail_host: mail_host.value,
-                    mail_addr_type: mail_addr_type.val(),
-                    mail_ip_host: mail_ip_host.value,
-                    mail_preference: mail_preference.value,
-                    mail_ttl: mail_ttl.value,
-                    external: false
-                })
-            }
-        } else {
-            if (mail_host.value != '' && mail_preference.value != '') {
-                mails_records.push({
-                    mail_host: mail_host.value,
-                    mail_preference: mail_preference.value,
-                    mail_ttl: mail_ttl.value,
-                    external: true
-                })
-            }
-        }
-    });
+    let mails_records = getMailRecords(mails.length);
 
     let domain_details = {domain_name: domain_name.value, admin_mail: admin_mail.value, domain_ttl: domain_ttl.value};
 
