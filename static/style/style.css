@@ -8,7 +8,7 @@ body {
     float: left;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
-    width: 28%;
+    width: 30%;
     height: 100%;
 }
 
@@ -39,11 +39,11 @@ body {
 
 /* Style the tab content */
 .tabcontent {
-    float: left;
+    float: right;
     padding: 0 12px;
     border: 1px;
-    width: 72%;
-    border-left: none;
+    width: 70%;
+
     height: 100%;
 }
 
@@ -96,3 +96,13 @@ input:disabled, select:disabled {
     margin: auto;
 }
 
+.errors{
+    display: none;
+}
+
+.errors p {
+    font-size: 12px;
+    padding : 0;
+    margin : 0;
+    text-align: center;
+}

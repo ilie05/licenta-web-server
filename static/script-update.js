@@ -4,6 +4,8 @@ let counterMailRecords = 1;
 let enableAddButtons = false;
 
 $(document).ready(function () {
+    $('#domain_name').popover();
+    $('#btn-save').css('display', 'none');
 
     $('#domain_name_select').on('change', function () {
         let optionSelected = $("option:selected", this);
@@ -19,8 +21,8 @@ $(document).ready(function () {
             success: function (data) {
                 //  console.log("Ajax response success function!");
                 createDomainContent(data);
-
-                if(!enableAddButtons) {
+                $('#btn-save').css('display', 'block');
+                if (!enableAddButtons) {
                     enableButtons();
                     enableAddButtons = true;
                 }
@@ -67,7 +69,8 @@ function createDomainContent(data) {
 
     let content = `                    
         <label for="domain_name">Domain name</label>
-        <input name="domain_name" id="domain_name" class="form-control" type="text" value="${domain_details.domain_name}"
+        <input data-toggle="popover" data-trigger="focus" title="Attention! Modifying this field will result creating a brand new domain record and deleting the old one!" 
+            name="domain_name" id="domain_name" class="form-control" type="text" value="${domain_details.domain_name}"
             pattern="[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\\.[a-zA-Z]{2,})+" required
             oninvalid="this.setCustomValidity('Invalid domain name!')" oninput="this.setCustomValidity('')">
         <label for="admin_mail">Admin mail</label>
@@ -82,6 +85,7 @@ function createDomainContent(data) {
     $(".domain-field :input").attr("disabled", true);
     $('#btn-delete-domain').click(function () {
         emptyPage();
+        $('#btn-save').css('display', 'none');
     });
 
     let ns_records = data.ns_records;
@@ -166,8 +170,11 @@ function createMailRecords(mails_records) {
 
     mails_records.forEach((record) => {
         let ip_addr;
-        if (Object.keys(record).length === 5) {ip_addr = record.mail_ip_host;}
-        else {ip_addr = '';}
+        if (Object.keys(record).length === 5) {
+            ip_addr = record.mail_ip_host;
+        } else {
+            ip_addr = '';
+        }
 
         content = `
 			<div class="mail_record form-inline">
@@ -221,6 +228,11 @@ function setButtonsAndInputs() {
 }
 
 function saveFunction() {
+    // get Domain details
+    let domain_name = $('#domain_name')[0];
+    let admin_mail = $('#admin_mail')[0];
+    let domain_ttl = $('#domain_ttl')[0];
+
     let name_servers = $('.ns_record_wrapper .ns_record');
     let ns_records = getNsRecords(name_servers.length);
 
@@ -230,6 +242,17 @@ function saveFunction() {
     let mails = $('.mail_record_wrapper .mail_record');
     let mails_records = getMailRecords(mails.length);
 
+    let domain_details = {domain_name: domain_name.value, admin_mail: admin_mail.value, domain_ttl: domain_ttl.value};
+
+    let obj_to_send = {
+        domain_details: domain_details,
+        ns_records: ns_records,
+        hosts_records: hosts_records,
+        mails_records: mails_records
+    };
+
+    console.log(obj_to_send);
+    ajaxRequest(obj_to_send, '/update');
     return false;
 }
 

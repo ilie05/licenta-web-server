@@ -2,7 +2,6 @@ let counterNsRecords = 2;
 let counterHostRecords = 2;
 let counterMailRecords = 2;
 
-
 $(document).ready(function () {
 
     document.getElementById("defaultOpen").click();
@@ -22,7 +21,6 @@ $(document).ready(function () {
     });
 });
 
-
 function openTab(evt, tabName) {
     let i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
@@ -36,7 +34,6 @@ function openTab(evt, tabName) {
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
-
 
 function mySubmitFunction() {
     // get Domain details
@@ -66,12 +63,10 @@ function mySubmitFunction() {
         mails_records: mails_records
     };
 
-    console.log(obj_to_send);
     ajaxRequest(obj_to_send);
 
     return false;
 }
-
 
 function ajaxRequest(data_to_send) {
     $.ajax({
@@ -83,14 +78,70 @@ function ajaxRequest(data_to_send) {
         success: function (data) {
             console.log("Ajax response success function!");
             console.log(data);
-            //window.document.write(data);
-            //window.history.pushState("data", "Inserted", '/inserted');
+            window.location.href = '/success';
+
+            // window.document.write(data);
+            // window.history.pushState("data", "Inserted", '/success');
         },
         error: function (data) {
+            console.log(data.status);
             console.log("Ajax response error function!");
-            console.log(data);
-
-            //window.document.write(data.responseText)
+            if (data.status == 400) {
+                let errors = JSON.parse(data.responseText);
+                displayErrors(errors)
+            } else if(data.status == 412) {
+                window.location.href = '/400';
+            }else{
+                window.location.href = '/404';
+            }
         }
     });
+}
+
+function displayErrors(errors) {
+    let div = $('#domain .errors');
+    if (errors.domain_details) {
+
+        div.css('display', 'block');
+
+        for (const key in errors.domain_details) {
+            let value = errors.domain_details[key];
+            div.append(`<p>${value}</p>`);
+        }
+    }
+
+    if (errors.ns_records && errors.ns_records.length) {
+        div.css('display', 'block');
+
+        errors.ns_records.forEach((record) => {
+            for (const key in record) {
+                let value = record[key];
+                div.append(`<p>${value}</p>`);
+            }
+        });
+    }
+
+    div = $('#hosts .errors');
+    if (errors.hosts_records && errors.hosts_records.length) {
+        div.css('display', 'block');
+
+        errors.hosts_records.forEach((record) => {
+            for (const key in record) {
+                let value = record[key];
+                div.append(`<p>${value}</p>`);
+            }
+        });
+    }
+
+    div = $('#mail .errors');
+    if (errors.mails_records && errors.mails_records.length) {
+        div.css('display', 'block');
+
+        errors.mails_records.forEach((record) => {
+            for (const key in record) {
+                let value = record[key];
+                div.append(`<p>${value}</p>`);
+            }
+        });
+    }
 }

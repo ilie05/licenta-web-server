@@ -30,12 +30,16 @@
         <button class="tablinks" onclick="openTab(event, 'mail')" id="btn-tab-mail">Mail</button>
         <button class="tablinks" onclick="openTab(event, 'other')">Other</button>
     </div>
+
 </div>
+
 
 
 <form id="record_form" onsubmit="return mySubmitFunction()" method="post">
     <div class="container-fluid">
         <div id="domain" class="tabcontent">
+            <div class="errors alert alert-danger">
+            </div>
             <div class="row">
                 <div class="col-sm" style="background-color:#e4fbf9;">
                     <h2>Base data</h2>
@@ -79,6 +83,8 @@
         </div>
 
         <div id="hosts" class="tabcontent">
+            <div class="errors alert alert-danger">
+            </div>
             <div class="row">
                 <div class="col-sm host_record_wrapper" style="background-color:#438a90;">
                     <h2>Hosts </h2>
@@ -101,6 +107,8 @@
         </div>
 
         <div id="mail" class="tabcontent">
+            <div class="errors alert alert-danger">
+            </div>
             <div class="row">
                 <div class="col-sm mail_record_wrapper" style="background-color:#438a90;">
                     <h2>Mails </h2>

@@ -177,3 +177,4 @@ function getMailRecords(numRecords) {
     }
     return mails_records;
 }
+
