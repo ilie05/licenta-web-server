@@ -1,6 +1,7 @@
 let counterNsRecords = 1;
 let counterHostRecords = 1;
 let counterMailRecords = 1;
+let enableAddButtons = false;
 
 $(document).ready(function () {
 
@@ -18,6 +19,11 @@ $(document).ready(function () {
             success: function (data) {
                 //  console.log("Ajax response success function!");
                 createDomainContent(data);
+
+                if(!enableAddButtons) {
+                    enableButtons();
+                    enableAddButtons = true;
+                }
                 //window.document.write(data);
                 //window.history.pushState("data", "Inserted", '/inserted');
             },
@@ -28,13 +34,30 @@ $(document).ready(function () {
             }
         });
     });
+
+
 });
+
+function enableButtons() {
+    $("#add_ns").click(function () { return addNsRecord(counterNsRecords); });
+    counterNsRecords++;
+
+    $("#add_host").click(function () { return addHostRecord(counterHostRecords); });
+    counterHostRecords++;
+
+    $("#add_mail").click(function () { return addMailRecord(counterMailRecords); });
+    counterMailRecords++;
+}
 
 function emptyPage() {
     $(".domain-field").empty();
     $('.ns_record_wrapper').empty();
     $('.host_record_wrapper').empty();
     $('.mail_record_wrapper').empty();
+
+    counterNsRecords = 1;
+    counterHostRecords = 1;
+    counterMailRecords = 1;
 }
 
 function createDomainContent(data) {

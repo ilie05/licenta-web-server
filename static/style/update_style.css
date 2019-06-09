@@ -40,3 +40,16 @@ input {
 input[type=number] {
     -moz-appearance: textfield; /* Firefox */
 }
+
+.add {
+    margin-left: 20px;
+    background-color: white;
+    color: black;
+    border: 2px solid #555555;
+    border-radius: 4px;
+    color: dimgrey;
+}
+
+.add:hover {
+    background-color: #555555;
+}

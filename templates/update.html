@@ -30,37 +30,55 @@
             <div class="col-sm-3">
                 <h1>Update page!</h1>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-3"></div>
-            <div class="col-sm-8">
-                <select class="form-control" name="domain_name" id="domain_name">
+            <div class="col-sm-6">
+                <select class="form-control" name="domain_name_select" id="domain_name_select">
                     <option disabled selected value="">Select domain name</option>
                     {% for item in domain_names %}
                         <option value="{{ item }}">{{ item }}</option>
                     {% endfor %}
                 </select>
-            <div class="form-inline">
-                <input class="form-control">
             </div>
-            </div>
-
         </div>
 
         <div class="row">
-            <div class="col-sm-1"></div>
             <div class="col-sm-2">
-                <h4>Name server records</h4>
+                <h4><strong>Domain</strong></h4>
             </div>
+            <div class="col-sm-9" style="border: none">
+                <div class="form-inline domain-field">
 
-            <div class="col-sm-8 ns_record_wrapper">
-
+                </div>
             </div>
         </div>
-</div>
-</form>
 
+        <div class="row">
+            <div class="col-sm-2">
+                <h4>Name server records</h4>
+                <button class="add" type="button" id="add_ns">New record</button>
+            </div>
+            <div class="col-sm-9 ns_record_wrapper">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2">
+                <h4>Host records</h4>
+                <button class="add" type="button" id="add_host">New record</button>
+            </div>
+            <div class="col-sm-9 host_record_wrapper">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <h4>Mail records</h4>
+                <button class="add" type="button" id="add_mail">New record</button>
+            </div>
+
+            <div class="col-sm-9 mail_record_wrapper">
+            </div>
+        </div>
+    </form>
 </div>
+
 </body>
 </html>
