@@ -9,14 +9,17 @@ $(document).ready(function () {
 
     $(".external-check").change(CheckChangeEvent);
 
-    $("#add_ns").click(function () { return addNsRecord(counterNsRecords); });
-    counterNsRecords++;
+    $("#add_ns").click(function () {
+        return addNsRecord(counterNsRecords++);
+    });
 
-    $("#add_host").click(function () { return addHostRecord(counterHostRecords); });
-    counterHostRecords++;
+    $("#add_host").click(function () {
+        return addHostRecord(counterHostRecords++);
+    });
 
-    $("#add_mail").click(function () { return addMailRecord(counterMailRecords); });
-    counterMailRecords++;
+    $("#add_mail").click(function () {
+        return addMailRecord(counterMailRecords++);
+    });
 });
 
 
@@ -43,37 +46,8 @@ function mySubmitFunction() {
 
     //get Name Server Records
     let name_servers = $('.ns_record_wrapper .ns_record');
-    let ns_records = [];
+    let ns_records = getNsRecords(name_servers.length);
 
-    let index = 0;
-    while (name_servers.length >= index) {
-        if (!$('#ns' + (index + 1)).length) {
-            index++;
-            continue;
-        }
-        let ns = $('#ns' + (index + 1))[0];
-        let ns_ip_addr_type = $('#ns_ip_addr_type' + (index + 1) + ' :selected');
-        let ns_ip = $('#ns_ip' + (index + 1))[0];
-        let ns_ttl = $('#ns_ttl' + (index + 1))[0];
-
-        if (index > 0) {
-            if (ns.value != '' && ns_ip_addr_type.val() != '' && ns_ip.value != '')
-                ns_records.push({
-                    ns: ns.value,
-                    ns_ip_addr_type: ns_ip_addr_type.val(),
-                    ns_ip: ns_ip.value,
-                    ns_ttl: ns_ttl.value
-                });
-        } else {
-            ns_records.push({
-                ns: ns.value,
-                ns_ip_addr_type: ns_ip_addr_type.val(),
-                ns_ip: ns_ip.value,
-                ns_ttl: ns_ttl.value
-            });
-        }
-        index++;
-    }
 
     //get HOST Records
     let hosts = $('.host_record_wrapper .host_record');
@@ -139,7 +113,8 @@ function mySubmitFunction() {
         mails_records: mails_records
     };
 
-   ajaxRequest(obj_to_send);
+    console.log(obj_to_send);
+    ajaxRequest(obj_to_send);
 
     return false;
 }

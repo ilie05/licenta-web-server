@@ -74,3 +74,32 @@ function addMailRecord(counterMailRecords) {
     $(".mail_record_wrapper").append(content);
     $('.external-check:last').change(CheckChangeEvent);
 }
+
+function getNsRecords(numRecords) {
+    let ns_records = [];
+    let index = 1;
+    let count = 0;
+
+    while (numRecords > count && index < 15) {
+        if (!$('#ns' + index)) {
+            index++;
+            continue;
+        }
+        let ns = $('#ns' + index)[0];
+        let ns_ip_addr_type = $('#ns_ip_addr_type' + index + ' :selected');
+        let ns_ip = $('#ns_ip' + index)[0];
+        let ns_ttl = $('#ns_ttl' + index)[0];
+
+        if (ns.value != '' && ns_ip_addr_type.val() != '' && ns_ip.value != '') {
+            ns_records.push({
+                ns: ns.value,
+                ns_ip_addr_type: ns_ip_addr_type.val(),
+                ns_ip: ns_ip.value,
+                ns_ttl: ns_ttl.value
+            });
+        }
+        index++;
+        count++;
+    }
+    return ns_records;
+}

@@ -34,19 +34,20 @@ $(document).ready(function () {
             }
         });
     });
-
-
 });
 
 function enableButtons() {
-    $("#add_ns").click(function () { return addNsRecord(counterNsRecords); });
-    counterNsRecords++;
+    $("#add_ns").click(function () {
+        return addNsRecord(counterNsRecords++);
+    });
 
-    $("#add_host").click(function () { return addHostRecord(counterHostRecords); });
-    counterHostRecords++;
+    $("#add_host").click(function () {
+        return addHostRecord(counterHostRecords++);
+    });
 
-    $("#add_mail").click(function () { return addMailRecord(counterMailRecords); });
-    counterMailRecords++;
+    $("#add_mail").click(function () {
+        return addMailRecord(counterMailRecords++);
+    });
 }
 
 function emptyPage() {
@@ -217,5 +218,13 @@ function setButtonsAndInputs() {
         $(this).parent("div").find(':input').attr("disabled", false);
         $(this).parent("div").css({'background-color': 'white', 'border': '0'});
     });
+}
+
+function saveFunction() {
+    let name_servers = $('.ns_record_wrapper .ns_record');
+    //console.log(name_servers.length);
+    let ns_records = getNsRecords(name_servers.length);
+    console.log(ns_records);
+    return false;
 }
 

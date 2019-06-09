@@ -23,7 +23,7 @@
 </ul>
 
 <div class="fluid_container">
-    <form class="form-group">
+    <form class="form-group" onsubmit="return saveFunction()">
         <div class="row">
             <div class="col-sm-1">
             </div>
@@ -38,6 +38,9 @@
                     {% endfor %}
                 </select>
             </div>
+        <div class="col-sm-1">
+            <button type="submit" class="btn btn-info">SAVE</button>
+        </div>
         </div>
 
         <div class="row">
