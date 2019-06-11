@@ -9,6 +9,7 @@ import sys
 import pymongo
 import datetime
 
+
 client = pymongo.MongoClient('mongodb://localhost:27017/')
 db = client['licenta']
 collection = db['zones']
@@ -16,12 +17,12 @@ collection = db['zones']
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+
 @app.route('/test', methods=['POST', 'GET'])
 def test():
     if request.method == 'POST':
         data = request.get_json();
         print(request.get_json())
-        print("POST")
         if data['data'] == 'true':
             return make_response(jsonify({'data': "good data"}), 200)
         else:
@@ -36,9 +37,6 @@ def test():
 @app.route('/echo')
 def echo():
     return render_template('echo.html')
-#
-# _id = session.get('working_domain')['record_id']
-# dom = collection.find_one({'_id': ObjectId(_id)})
 
 
 @app.route('/')
@@ -48,23 +46,28 @@ def index():
 
 @app.route('/record', methods=['POST'])
 def record():
-    if request.method == 'POST':
-        try:
-            data = request.get_json()
-            print(data)
-            status, data = process_form(data)
-            if status:
+    try:
+        data = request.get_json()
+        print("Before processing")
+        print(data)
+        status, data = process_form(data)
+        data['modify_time'] = datetime.datetime.utcnow()
+        data['status'] = 'insert'
+        if status:
+            try:
                 collection.insert_one(data)
-                print("Good processing")
-                print(data)
-                return make_response(render_template('success.html'), 200)
-            else:
-                print("Bad processing")
-                print(data)
-                return make_response(jsonify(data), 400)
-        except:
-            print("Exeption! Bad request")
-            return make_response("", 412)
+            except:
+                return make_response('', 500)
+            print("Good processing")
+            print(data)
+            return make_response('', 200)
+        else:
+            print("Bad processing")
+            print(data)
+            return make_response(jsonify(data), 400)
+    except:
+        print("Exeption! Bad request")
+        return make_response('', 412)
 
 
 @app.route('/404')
@@ -84,31 +87,64 @@ def internal_error():
 
 @app.route('/update')
 def update():
-    domains = collection.find({}, {'domain_details': 1})
-
+    try:
+        domains = collection.find({'status': {'$ne': 'delete'}}, {'domain_details': 1})
+    except:
+        return make_response('', 500)
     domain_names = [k['domain_details']['domain_name'] for k in domains]
     return render_template('update.html', domain_names=domain_names)
 
 
 @app.route('/updateRecord', methods=['POST'])
 def update_record():
-    if request.method == 'POST':
-        try:
-            data = request.get_json()
-            print("Data from client: ")
+    try:
+        data = request.get_json()
+        print("Data from client: ")
+        print(data)
+
+        status, data = process_form(data)
+        if not status:
+            print("Bad processing")
             print(data)
-            status, data = process_form(data)
-            if status:
-                data['modify_time'] = datetime.datetime.utcnow()
-                data['status'] = 'update'
-            else:
-                return redirect(url_for('/update', errors=data))
-        except:
-            print("Exeption! Bad request")
-            return render_template('400_bad_request.html')
-    else:
-        print("Else Not POST")
-        return render_template('400_bad_request.html')
+            return make_response(jsonify(data), 400)
+
+        print("Good processing")
+        print(data)
+
+        sess = session.pop('working_domain', None)
+        if not sess:
+            print("'working_domain'  is not stored in session")
+            return make_response('', 500)
+        _id = sess['record_id']
+
+        # find the old document in collection
+        old_domain = collection.find_one({'_id': ObjectId(_id)})
+        # check if the document does not exist anymore into collection
+        if not old_domain.pop('_id', None):
+            print("old document does not exist anymore into collection")
+            return make_response('', 500)
+
+        # check if the domain from user is the same from session
+        if sess['domain_name'] != data['domain_details']['domain_name']:
+
+            print("create new domain and delete the old one")
+            # update status for the old document to 'delete'
+            collection.update_one({'_id': ObjectId(_id)}, {'$set': {'status': 'delete'}})
+            data['status'] = 'insert'
+        else:
+            print('The domains correspond, update the old document')
+            collection.delete_one({'_id': ObjectId(_id)})
+            data['status'] = 'update'
+
+        print("Insert updated or new record into collection")
+        # insert updated or new record into collection
+        data['modify_time'] = datetime.datetime.utcnow()
+        collection.insert_one(data)
+        return make_response('', 200)
+    except:
+        print("Exeption! Bad request")
+        return make_response('', 400)
+
 
 @app.route('/successUpdate')
 def success_update():
@@ -122,9 +158,9 @@ def success_insert():
 
 @app.route('/getDomain', methods=['POST'])
 def get_domain():
-    if request.method == 'POST':
+    try:
+        domain_name = request.get_json()
         try:
-            domain_name = request.get_json()
             domain_record = collection.find_one({'domain_details.domain_name': domain_name['domain_name']})
         except:
             return make_response('', 500)

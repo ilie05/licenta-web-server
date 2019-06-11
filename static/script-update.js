@@ -19,20 +19,25 @@ $(document).ready(function () {
             contentType: 'application/json; charset=utf-8',
 
             success: function (data) {
-                //  console.log("Ajax response success function!");
                 createDomainContent(data);
                 $('#btn-save').css('display', 'block');
                 if (!enableAddButtons) {
                     enableButtons();
                     enableAddButtons = true;
                 }
-                //window.document.write(data);
-                //window.history.pushState("data", "Inserted", '/inserted');
             },
             error: function (data) {
-                console.log("Ajax response error function!!!");
-                console.log(data.status);
-                //window.document.write(data.responseText)
+                console.log("Ajax response error function!");
+                if (data.status == 400) {
+                    let errors = JSON.parse(data.responseText);
+                    displayErrors(errors)
+                } else if (data.status == 412) {
+                    window.location.href = '/400';
+                } else if (data.status == 500) {
+                    window.location.href = '/500';
+                } else {
+                    window.location.href = '/404';
+                }
             }
         });
     });
@@ -149,7 +154,7 @@ function createHostRecords(hosts_records) {
 				    placeholder="Ip address..." class="form-control" value="${record.host_name_ip}">					
 				<input type="number" name="host_name_ttl${counterHostRecords}" id="host_name_ttl${counterHostRecords}" 
 				    placeholder="Time to live..." min="0" max="86400" class="form-control" value="${record.host_name_ttl}">
-                <input type="text" name="host_cname${counterHostRecords}" id="chost_name${counterHostRecords}" 
+                <input type="text" name="host_cname${counterHostRecords}" id="host_cname${counterHostRecords}" 
 				    placeholder="CNAME..." class="form-control" value="${record.host_cname}"
 				    pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
 				<button class="btn btn-danger btn-del" type="button">delete</button>
@@ -258,7 +263,39 @@ function saveFunction() {
     };
 
     console.log(obj_to_send);
-    ajaxRequest(obj_to_send, '/update');
+    ajaxRequest(obj_to_send);
     return false;
 }
 
+function ajaxRequest(data_to_send) {
+    $.ajax({
+        url: '/updateRecord',
+        data: JSON.stringify(data_to_send),
+        method: 'POST',
+        dataType: 'text',
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+            console.log("Ajax response success function!");
+            console.log(data);
+            window.location.href = '/successUpdate';
+        },
+        error: function (data) {
+            console.log(data.status);
+            console.log("Ajax response error function!");
+            if (data.status == 400) {
+                try {
+                    let errors = JSON.parse(data.responseText);
+                    displayErrors(errors);
+                }catch (e) {
+                    window.location.href = '/500';
+                }
+            } else if(data.status == 412) {
+                window.location.href = '/400';
+            } else if (data.status == 500) {
+                window.location.href = '/500';
+            }else{
+                window.location.href = '/404';
+            }
+        }
+    });
+}
