@@ -6,6 +6,7 @@ REGEX_email = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,
 REGEX_label = r'[a-zA-Z90-9]([a-zA-Z90-9-]{0,61}[a-zA-Z90-9])?'
 REGEX_ipv4 = r'^\d{1,3}(\.\d{1,3}){3}$'
 REGEX_ipv6 = r'^[a-fA-F0-9]{1,4}(::?[a-fA-F0-9]{1,4}){1,7}$'
+REGEX_domain = '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
 
 
 class Validation(object):
@@ -42,13 +43,21 @@ class Validation(object):
         return str(''.join(email)).replace('@', '.')
 
     @staticmethod
-    def check_domain_name(name: str) -> str:
+    def check_host_name(name: str, input_type: str) -> str:
         name = str(name)
         pattern = r'^{0}(\.{0})*\.?$'.format(REGEX_label)
         if re.match(pattern, name):
             return name
 
-        raise Exception("\'{}\' is not a valid domain name!".format(name))
+        raise Exception("\'{0}\' is not a valid {1}!".format(name, input_type))
+
+    @staticmethod
+    def check_domain_name(name: str) -> str:
+        name = str(name)
+        if re.match(REGEX_domain, name):
+            return name
+
+        raise Exception("\'{0}\' is not a valid DOMAIN NAME!".format(name))
 
     @staticmethod
     def check_ipv4(address: str) -> str:
@@ -83,18 +92,18 @@ class Validation(object):
 
 
 if __name__ == '__main__':
+    # try:
+    #     res1 = Validation.check_email('maimsail.com')
+    #     print(res1)
+    # except Exception as e:
+    #     print(str(e))
+
     try:
-        res1 = Validation.check_email('maimsail.com')
-        print(res1)
+        res2 = Validation.check_domain_name('asds', 'DOMAIN')
+        print(res2)
     except Exception as e:
         print(str(e))
 
-    # try:
-    #     res2 = Validation.check_domain_name('a@sds.ds')
-    #     print(res2)
-    # except Exception as e:
-    #     print(str(e))
-    #
     # try:
     #     res3 = Validation.check_ttl('-8')
     #     print(res3)

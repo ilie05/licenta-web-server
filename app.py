@@ -176,7 +176,7 @@ def process_form(data):
 
     for _, record in enumerate(ns_records):
         try:
-            temp_dict['ns'] = Validation.check_domain_name(record['ns'])
+            temp_dict['ns'] = Validation.check_host_name(record['ns'], 'NAME SERVER')
         except Exception as e:
             temp_dict_error['ns'] = str(e)
 
@@ -217,7 +217,7 @@ def process_form(data):
 
     for _, record in enumerate(hosts_records):
         try:
-            temp_dict['host_name'] = Validation.check_domain_name(record['host_name'])
+            temp_dict['host_name'] = Validation.check_host_name(record['host_name'], 'HOST NAME')
         except Exception as e:
             temp_dict_error['host_name'] = str(e)
         try:
@@ -242,6 +242,11 @@ def process_form(data):
             temp_dict['host_name_ttl'] = Validation.check_ttl(record['host_name_ttl'], 86400)
         except Exception as e:
             temp_dict_error['host_name_ttl'] = str(e)
+
+        try:
+            temp_dict['host_cname'] = Validation.check_host_name(record['host_cname'], 'CNAME')
+        except Exception as e:
+            temp_dict_error['host_cname'] = str(e)
 
         if len(temp_dict_error.keys()) > 0:
             error['hosts_records'].append(temp_dict_error)
@@ -280,7 +285,7 @@ def process_form(data):
             continue
 
         try:
-            temp_dict['mail_host'] = Validation.check_domain_name(record['mail_host'])
+            temp_dict['mail_host'] = Validation.check_host_name(record['mail_host'], 'MAIL HOST NAME')
         except Exception as e:
             temp_dict_error['mail_host'] = str(e)
 
@@ -288,6 +293,11 @@ def process_form(data):
             temp_dict['mail_ttl'] = Validation.check_ttl(record['mail_ttl'], 3024000)
         except Exception as e:
             temp_dict_error['mail_ttl'] = str(e)
+
+        try:
+            temp_dict['mail_cname'] = Validation.check_host_name(record['mail_cname'], 'CNAME')
+        except Exception as e:
+            temp_dict_error['mail_cname'] = str(e)
 
         try:
             temp_dict['mail_preference'] = Validation.check_ttl(record['mail_preference'], 65535)

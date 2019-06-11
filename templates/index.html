@@ -101,6 +101,8 @@
                         <!--86400 sec. or 1 day  max ttl for host name-->
                         <input type="number" name="host_name_ttl1" id="host_name_ttl1" placeholder="Time to live..."
                                min="0" max="86400" class="form-control">
+                        <input type="text" name="host_cname1" id="host_cname1" placeholder="CNAME..." class="form-control"
+                               pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
                     </div>
                 </div>
             </div>
@@ -127,6 +129,8 @@
                         <!--3024000 sec. or 5 weeks  max ttl for mail-->
                         <input type="number" name="mail_ttl1" id="mail_ttl1" placeholder="Time to live..." min="0"
                                max="3024000" class="form-control">
+                        <input name="mail_cname1" id="mail_cname1" type="text" placeholder="CNAME..." class="form-control"
+                               pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
                         <label class="form-check-label">
                             <input type="checkbox" class="external-check form-check-input" name="external1">External
                             record

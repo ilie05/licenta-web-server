@@ -149,6 +149,9 @@ function createHostRecords(hosts_records) {
 				    placeholder="Ip address..." class="form-control" value="${record.host_name_ip}">					
 				<input type="number" name="host_name_ttl${counterHostRecords}" id="host_name_ttl${counterHostRecords}" 
 				    placeholder="Time to live..." min="0" max="86400" class="form-control" value="${record.host_name_ttl}">
+                <input type="text" name="host_cname${counterHostRecords}" id="chost_name${counterHostRecords}" 
+				    placeholder="CNAME..." class="form-control" value="${record.host_cname}"
+				    pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
 				<button class="btn btn-danger btn-del" type="button">delete</button>
                 <button class="btn btn-primary btn-edit" type="button">edit</button>
 			</div>`;
@@ -192,6 +195,9 @@ function createMailRecords(mails_records) {
 			        type="number" min="0" max="65535" placeholder="Preference..." class="form-control" value="${record.mail_preference}">
 			    <input type="number" name="mail_ttl${counterMailRecords}" id="mail_ttl${counterMailRecords}" 
 			        class="form-control" placeholder="Time to live..." min="0" max="3024000" value="${record.mail_ttl}">
+			    <input name="mail_cname${counterMailRecords}" id="mail_cname${counterMailRecords}" type="text" 
+			        placeholder="CNAME..." class="form-control" value="${record.mail_cname}"
+			        pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
                 <label class="form-check-label">
                     <input type="checkbox" class="external-check  form-check-input" name="external${counterMailRecords}">External
                 </label> 
