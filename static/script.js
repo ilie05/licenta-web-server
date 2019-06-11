@@ -78,10 +78,7 @@ function ajaxRequest(data_to_send) {
         success: function (data) {
             console.log("Ajax response success function!");
             console.log(data);
-            window.location.href = '/success';
-
-            // window.document.write(data);
-            // window.history.pushState("data", "Inserted", '/success');
+            window.location.href = '/successInsert';
         },
         error: function (data) {
             console.log(data.status);
@@ -91,6 +88,8 @@ function ajaxRequest(data_to_send) {
                 displayErrors(errors)
             } else if(data.status == 412) {
                 window.location.href = '/400';
+            } else if (data.status == 500) {
+                window.location.href = '/500';
             }else{
                 window.location.href = '/404';
             }

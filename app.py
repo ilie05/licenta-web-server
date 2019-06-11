@@ -69,12 +69,17 @@ def record():
 
 @app.route('/404')
 def not_found():
-    return render_template('404_not_found.html')
+    return render_template('errors/404_not_found.html')
 
 
 @app.route('/400')
 def bad_request():
-    return render_template('400_bad_request.html.html')
+    return render_template('errors/400_bad_request.html')
+
+
+@app.route('/500')
+def internal_error():
+    return render_template('errors/500_internal_error.html')
 
 
 @app.route('/update')
@@ -85,7 +90,7 @@ def update():
     return render_template('update.html', domain_names=domain_names)
 
 
-@app.route('/updateRecord')
+@app.route('/updateRecord', methods=['POST'])
 def update_record():
     if request.method == 'POST':
         try:
@@ -105,27 +110,44 @@ def update_record():
         print("Else Not POST")
         return render_template('400_bad_request.html')
 
+@app.route('/successUpdate')
+def success_update():
+    return render_template('success_update.html')
 
-@app.route('/success')
-def success():
-    return render_template('success.html')
+
+@app.route('/successInsert')
+def success_insert():
+    return render_template('success_insert.html')
 
 
-@app.route('/getDomain', methods=['POST', 'GET'])
+@app.route('/getDomain', methods=['POST'])
 def get_domain():
     if request.method == 'POST':
         try:
             domain_name = request.get_json()
             domain_record = collection.find_one({'domain_details.domain_name': domain_name['domain_name']})
-            session['working_domain'] = {'domain_name': domain_name['domain_name'],
-                                         'record_id': str(domain_record.pop('_id', None))}
-            return make_response(jsonify(domain_record), 200)
-        except Exception as e:
-            return make_response(jsonify({'data': 'some shit!'}), 400)
-    elif request.method == 'GET':
-        print("GET getDomain method!")
-    else:
-        return render_template('400_bad_request.html')
+        except:
+            return make_response('', 500)
+
+        # domain not found from SELECT user interface
+        if not domain_record:
+            return make_response('', 412)
+
+        session['working_domain'] = {'domain_name': domain_name['domain_name'],
+                                     'record_id': str(domain_record.pop('_id', None))}
+        return make_response(jsonify(domain_record), 200)
+    except:
+        return make_response('', 412)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('errors/404_not_found.html')
+
+
+@app.errorhandler(405)
+def page_not_found(e):
+    return render_template('errors/405_not_allowed.html')
 
 
 def process_form(data):
