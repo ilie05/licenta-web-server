@@ -148,12 +148,37 @@ def update_record():
 
 @app.route('/successUpdate')
 def success_update():
-    return render_template('success_update.html')
+    return render_template('success/success_update.html')
 
 
 @app.route('/successInsert')
 def success_insert():
-    return render_template('success_insert.html')
+    return render_template('success/success_insert.html')
+
+
+@app.route('/successDelete')
+def success_delete():
+    return render_template('success/success_delete.html')
+
+
+@app.route('/delete', methods=['POST'])
+def delete():
+    try:
+        domain_name = request.get_json()
+        sess = session.pop('working_domain', None)
+        if not sess:
+            print("'working_domain'  is not stored in session")
+            return make_response('', 500)
+
+        if domain_name['domain_name'] != sess['domain_name']:
+            return make_response('', 400)
+
+        _id = sess['record_id']
+        collection.update_one({'_id': ObjectId(_id)},
+                              {'$set': {'status': 'delete', 'modify_time': datetime.datetime.utcnow()}})
+        return make_response('', 200)
+    except:
+        return make_response('', 400)
 
 
 @app.route('/getDomain', methods=['POST'])

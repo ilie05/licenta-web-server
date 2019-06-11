@@ -19,6 +19,11 @@ $(document).ready(function () {
             contentType: 'application/json; charset=utf-8',
 
             success: function (data) {
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {
+                    window.location.href = '/400';
+                }
                 createDomainContent(data);
                 $('#btn-save').css('display', 'block');
                 if (!enableAddButtons) {
@@ -69,7 +74,6 @@ function emptyPage() {
 }
 
 function createDomainContent(data) {
-    data = JSON.parse(data);
     let domain_details = data.domain_details;
 
     let content = `                    
@@ -91,6 +95,30 @@ function createDomainContent(data) {
     $('#btn-delete-domain').click(function () {
         emptyPage();
         $('#btn-save').css('display', 'none');
+
+        let optionSelected = $('#domain_name_select option:selected');
+
+        $.ajax({
+            url: '/delete',
+            data: JSON.stringify({domain_name: optionSelected.val()}),
+            method: 'POST',
+            dataType: 'text',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                window.location.href = '/successDelete';
+            },
+            error: function (data) {
+                console.log("Ajax response error function!");
+                if (data.status == 400) {
+                    window.location.href = '/400';
+                } else if (data.status == 500) {
+                    window.location.href = '/500';
+                } else {
+                    window.location.href = '/404';
+                }
+            }
+        });
+
     });
 
     let ns_records = data.ns_records;

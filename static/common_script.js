@@ -1,7 +1,3 @@
-function printf(arg) {
-    console.log(arg);
-}
-
 function CheckChangeEvent() {
     let order_of_this = this.name.substring(8);
     let input_target = $('#mail_ip_host' + order_of_this)[0];
