@@ -127,3 +127,10 @@ button span{
     float: right;
     font-weight: bold;
 }
+
+.form-inline span{
+    padding-left: 20px;
+    white-space: nowrap;
+    color: #FF8800;
+    font-style: italic;
+}

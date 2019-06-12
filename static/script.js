@@ -6,6 +6,11 @@ $(document).ready(function () {
 
     document.getElementById("defaultOpen").click();
 
+    // activate event on already existing elements on page
+    $('.ns_record').on('focusout', checkCompleteNsRecord);
+    $('.host_record').on('focusout', checkCompleteHostRecord);
+    $('.mail_record').on('focusout', checkCompleteMailRecord);
+
     $(".external-check").change(CheckChangeEvent);
 
     $("#add_ns").click(function () {
@@ -20,6 +25,55 @@ $(document).ready(function () {
         return addMailRecord(counterMailRecords++);
     });
 });
+
+function checkCompleteNsRecord() {
+    let index = $(this).find('input:first')[0].name.substring(2);
+    let ns = $('#ns' + index)[0];
+    let ns_ip_addr_type = $('#ns_ip_addr_type' + index + ' :selected');
+    let ns_ip = $('#ns_ip' + index)[0];
+
+    if(ns.value && ns_ip_addr_type.val() && ns_ip.value){
+        $(this).find('span').css('visibility', 'hidden');
+    }else{
+        $(this).find('span').css('visibility', 'visible');
+    }
+}
+
+function checkCompleteHostRecord() {
+    let index = $(this).find('input:first')[0].name.substring(9);
+    let host_name = $('#host_name' + index)[0];
+    let host_name_ip_addr_type = $('#host_name_ip_addr_type' + index + ' :selected');
+    let host_name_ip = $('#host_name_ip' + index)[0];
+
+    if(host_name.value && host_name_ip_addr_type.val() && host_name_ip.value){
+        $(this).find('span').css('visibility', 'hidden');
+    }else{
+        $(this).find('span').css('visibility', 'visible');
+    }
+}
+
+function checkCompleteMailRecord() {
+    let index = $(this).find('input:first')[0].name.substring(9);
+    let mail_host = $('#mail_host' + index)[0];
+    let mail_addr_type = $('#mail_addr_type' + index + ' :selected');
+    let mail_ip_host = $('#mail_ip_host' + index)[0];
+    let mail_preference = $('#mail_preference' + index)[0];
+    let external = $('[name=external' + index + ']');
+
+    if (!external.is(':checked')) {
+        if (mail_host.value && mail_addr_type.val() && mail_ip_host.value && mail_preference.value) {
+            $(this).find('span').css('visibility', 'hidden');
+        } else {
+            $(this).find('span').css('visibility', 'visible');
+        }
+    } else {
+        if (mail_host.value && mail_preference.value) {
+            $(this).find('span').css('visibility', 'hidden');
+        } else {
+            $(this).find('span').css('visibility', 'visible');
+        }
+    }
+}
 
 function openTab(evt, tabName, _this) {
     let i, tabcontent, tablinks;
@@ -69,7 +123,6 @@ function mySubmitFunction() {
     $('.tabcontent .errors').empty();
 
     ajaxRequest(obj_to_send);
-
     return false;
 }
 
@@ -104,10 +157,9 @@ function ajaxRequest(data_to_send) {
 
 function displayErrors(errors) {
     let div = $('#domain .errors');
+    div.css('display', 'none');
     if (errors.domain_details) {
-
         div.css('display', 'block');
-
         for (const key in errors.domain_details) {
             let value = errors.domain_details[key];
             div.append(`<p>${value}</p>`);
@@ -116,7 +168,6 @@ function displayErrors(errors) {
 
     if (errors.ns_records && errors.ns_records.length) {
         div.css('display', 'block');
-
         errors.ns_records.forEach((record) => {
             for (const key in record) {
                 let value = record[key];
@@ -126,9 +177,9 @@ function displayErrors(errors) {
     }
 
     div = $('#hosts .errors');
+    div.css('display', 'none');
     if (errors.hosts_records && errors.hosts_records.length) {
         div.css('display', 'block');
-
         errors.hosts_records.forEach((record) => {
             for (const key in record) {
                 let value = record[key];
@@ -138,9 +189,9 @@ function displayErrors(errors) {
     }
 
     div = $('#mail .errors');
+    div.css('display', 'none');
     if (errors.mails_records && errors.mails_records.length) {
         div.css('display', 'block');
-
         errors.mails_records.forEach((record) => {
             for (const key in record) {
                 let value = record[key];
