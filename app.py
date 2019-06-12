@@ -234,7 +234,7 @@ def process_form(data):
     zone_doc['domain_details'] = {}
 
     try:
-        zone_doc['domain_details']['domain_name'] = Validation.check_domain_name(domain_details['domain_name'])
+        zone_doc['domain_details']['domain_name'] = Validation.check_domain_name(domain_details['domain_name'], 'Domain Name')
     except Exception as e:
         error['domain_details']['domain_name'] = str(e)
 
@@ -373,13 +373,17 @@ def process_form(data):
                         temp_dict_error['mail_ip_host'] = str(e)
                 else:
                     temp_dict_error['mail_addr_type'] = 'Wrong type of Ip address!'
+                try:
+                    temp_dict['mail_host'] = Validation.check_host_name(record['mail_host'], 'MAIL HOST NAME')
+                except Exception as e:
+                    temp_dict_error['mail_host'] = str(e)
+            else:
+                try:
+                    temp_dict['mail_host'] = Validation.check_domain_name(record['mail_host'], 'External Mail Server')
+                except Exception as e:
+                    temp_dict_error['mail_host'] = str(e)
         except:
             continue
-
-        try:
-            temp_dict['mail_host'] = Validation.check_host_name(record['mail_host'], 'MAIL HOST NAME')
-        except Exception as e:
-            temp_dict_error['mail_host'] = str(e)
 
         try:
             if record['mail_ttl'] == '':

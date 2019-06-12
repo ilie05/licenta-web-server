@@ -26,55 +26,6 @@ $(document).ready(function () {
     });
 });
 
-function checkCompleteNsRecord() {
-    let index = $(this).find('input:first')[0].name.substring(2);
-    let ns = $('#ns' + index)[0];
-    let ns_ip_addr_type = $('#ns_ip_addr_type' + index + ' :selected');
-    let ns_ip = $('#ns_ip' + index)[0];
-
-    if(ns.value && ns_ip_addr_type.val() && ns_ip.value){
-        $(this).find('span').css('visibility', 'hidden');
-    }else{
-        $(this).find('span').css('visibility', 'visible');
-    }
-}
-
-function checkCompleteHostRecord() {
-    let index = $(this).find('input:first')[0].name.substring(9);
-    let host_name = $('#host_name' + index)[0];
-    let host_name_ip_addr_type = $('#host_name_ip_addr_type' + index + ' :selected');
-    let host_name_ip = $('#host_name_ip' + index)[0];
-
-    if(host_name.value && host_name_ip_addr_type.val() && host_name_ip.value){
-        $(this).find('span').css('visibility', 'hidden');
-    }else{
-        $(this).find('span').css('visibility', 'visible');
-    }
-}
-
-function checkCompleteMailRecord() {
-    let index = $(this).find('input:first')[0].name.substring(9);
-    let mail_host = $('#mail_host' + index)[0];
-    let mail_addr_type = $('#mail_addr_type' + index + ' :selected');
-    let mail_ip_host = $('#mail_ip_host' + index)[0];
-    let mail_preference = $('#mail_preference' + index)[0];
-    let external = $('[name=external' + index + ']');
-
-    if (!external.is(':checked')) {
-        if (mail_host.value && mail_addr_type.val() && mail_ip_host.value && mail_preference.value) {
-            $(this).find('span').css('visibility', 'hidden');
-        } else {
-            $(this).find('span').css('visibility', 'visible');
-        }
-    } else {
-        if (mail_host.value && mail_preference.value) {
-            $(this).find('span').css('visibility', 'hidden');
-        } else {
-            $(this).find('span').css('visibility', 'visible');
-        }
-    }
-}
-
 function openTab(evt, tabName, _this) {
     let i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");

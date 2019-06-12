@@ -25,3 +25,10 @@ li a:hover:not(.active) {
 .active {
   background-color: #4CAF50;
 }
+
+.form-inline span{
+    padding-left: 20px;
+    white-space: nowrap;
+    color: #FF8800;
+    font-style: italic;
+}

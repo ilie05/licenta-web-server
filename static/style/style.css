@@ -54,6 +54,9 @@ html, body {
     text-align: center;
     border-bottom: 1px solid darkgray;
 }
+.mail_record{
+    width: 80%;
+}
 
 .w3-button {
     margin-left: 2%;
@@ -126,11 +129,4 @@ button span{
     color: green;
     float: right;
     font-weight: bold;
-}
-
-.form-inline span{
-    padding-left: 20px;
-    white-space: nowrap;
-    color: #FF8800;
-    font-style: italic;
 }

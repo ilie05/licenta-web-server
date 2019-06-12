@@ -75,7 +75,6 @@ function emptyPage() {
 
 function createDomainContent(data) {
     let domain_details = data.domain_details;
-
     let content = `                    
         <label for="domain_name">Domain name</label>
         <input data-toggle="popover" data-trigger="focus" title="Attention! Modifying this field will result creating a brand new domain record and deleting the old one!" 
@@ -87,17 +86,16 @@ function createDomainContent(data) {
         <label for="domain_ttl">Default TTL</label>
         <input name="domain_ttl" id="domain_ttl" class="form-control" type="number" value="${domain_details.domain_ttl}" min="0" max="3024000"
                placeholder="Time to live..." required>
-        <button class="btn btn-danger" type="button" id="btn-delete-domain">Delete Domain</button>
-        <button class="btn btn-primary btn-edit" type="button">Edit Domain</button>`;
+        <button class="btn" type="button" id="btn-delete-domain"><i class="fa fa-trash-o" style="font-size:25px;color:red"></i></button>
+        <button class="btn btn-edit" type="button"><i class="material-icons" style="font-size:25px;color:blue">edit</i></button>`;
 
     $(".domain-field").append(content);
     $(".domain-field :input").attr("disabled", true);
+
     $('#btn-delete-domain').click(function () {
         emptyPage();
         $('#btn-save').css('display', 'none');
-
         let optionSelected = $('#domain_name_select option:selected');
-
         $.ajax({
             url: '/delete',
             data: JSON.stringify({domain_name: optionSelected.val()}),
@@ -150,11 +148,14 @@ function createNsRecord(ns_records) {
 				    placeholder="Ip address..." class="form-control" value="${record.ns_ip}">					
 				<input type="number" name="ns_ttl${counterNsRecords}" id="ns_ttl${counterNsRecords}" value="${record.ns_ttl}"
 				    placeholder="Time to live..." min="0" max="1209600" class="form-control">
-			    <button class="btn btn-danger btn-del" type="button">delete</button>
-                <button class="btn btn-primary btn-edit" type="button">edit</button>
+			    <button class="btn btn-del" type="button"><i class="fa fa-trash-o" style="font-size:25px;color:red"></i></button>
+                <button class="btn btn-edit" type="button"><i class="material-icons" style="font-size:25px;color:blue">edit</i></button>
+                <span class="not-complete">not complete</span>
 		  	</div>`;
         ns_record_wrapper.append(content);
         counterNsRecords++;
+        ns_record_wrapper.find('.ns_record span.not-complete').css('visibility', 'hidden');
+        ns_record_wrapper.find('.ns_record').on('focusout', checkCompleteNsRecord);
 
         if (record.ns_ip_addr_type === 'A') {
             $('.ns_record:last > select > option[value="A"]').attr('selected', 'selected');
@@ -167,8 +168,13 @@ function createNsRecord(ns_records) {
 
 function createHostRecords(hosts_records) {
     let content, host_record_wrapper = $('.host_record_wrapper');
-
+    let ttl, cname;
     hosts_records.forEach((record) => {
+        ttl = record.host_name_ttl;
+        if(!ttl) ttl = '';
+        cname = record.host_cname;
+        if(!cname) cname = '';
+
         content = `
 			<div class="host_record form-inline">
 				<input type="text" name="host_name${counterHostRecords}" id="host_name${counterHostRecords}" 
@@ -181,16 +187,19 @@ function createHostRecords(hosts_records) {
 				<input type="text" name="host_name_ip${counterHostRecords}" id="host_name_ip${counterHostRecords}" 
 				    placeholder="Ip address..." class="form-control" value="${record.host_name_ip}">					
 				<input type="number" name="host_name_ttl${counterHostRecords}" id="host_name_ttl${counterHostRecords}" 
-				    placeholder="Time to live..." min="0" max="86400" class="form-control" value="${record.host_name_ttl}">
+				    placeholder="Time to live..." min="0" max="86400" class="form-control" value="${ttl}">
                 <input type="text" name="host_cname${counterHostRecords}" id="host_cname${counterHostRecords}" 
-				    placeholder="CNAME..." class="form-control" value="${record.host_cname}"
+				    placeholder="CNAME..." class="form-control" value="${cname}"
 				    pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
-				<button class="btn btn-danger btn-del" type="button">delete</button>
-                <button class="btn btn-primary btn-edit" type="button">edit</button>
+				<button class="btn btn-del" type="button"><i class="fa fa-trash-o" style="font-size:25px;color:red"></i></button>
+                <button class="btn btn-edit" type="button"><i class="material-icons" style="font-size:25px;color:blue">edit</i></button>
+                <span class="not-complete">not complete</span>
 			</div>`;
 
         host_record_wrapper.append(content);
         counterHostRecords++;
+        host_record_wrapper.find('.host_record span.not-complete').css('visibility', 'hidden');
+        host_record_wrapper.find('.host_record').on('focusout', checkCompleteHostRecord);
 
         if (record.host_name_ip_addr_type === 'A') {
             $('.host_record:last > select > option[value="A"]').attr('selected', 'selected');
@@ -203,14 +212,18 @@ function createHostRecords(hosts_records) {
 
 function createMailRecords(mails_records) {
     let content, mails_records_wrapper = $('.mail_record_wrapper');
-
+    let ttl, cname, ip_addr;
     mails_records.forEach((record) => {
-        let ip_addr;
-        if (Object.keys(record).length === 5) {
+        console.log(record);
+        if (Object.keys(record).length === 6) {
             ip_addr = record.mail_ip_host;
         } else {
             ip_addr = '';
         }
+        ttl = record.mail_ttl;
+        if(!ttl) ttl = '';
+        cname = record.mail_cname;
+        if(!cname) cname = '';
 
         content = `
 			<div class="mail_record form-inline">
@@ -227,21 +240,24 @@ function createMailRecords(mails_records) {
 			    <input name="mail_preference${counterMailRecords}" id="mail_preference${counterMailRecords}" 
 			        type="number" min="0" max="65535" placeholder="Preference..." class="form-control" value="${record.mail_preference}">
 			    <input type="number" name="mail_ttl${counterMailRecords}" id="mail_ttl${counterMailRecords}" 
-			        class="form-control" placeholder="Time to live..." min="0" max="3024000" value="${record.mail_ttl}">
+			        class="form-control" placeholder="Time to live..." min="0" max="3024000" value="${ttl}">
 			    <input name="mail_cname${counterMailRecords}" id="mail_cname${counterMailRecords}" type="text" 
-			        placeholder="CNAME..." class="form-control" value="${record.mail_cname}"
+			        placeholder="CNAME..." class="form-control" value="${cname}"
 			        pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
                 <label class="form-check-label">
-                    <input type="checkbox" class="external-check  form-check-input" name="external${counterMailRecords}">External
+                    <input type="checkbox" class="external-check form-check-input" name="external${counterMailRecords}">External
                 </label> 
-				<button class="btn btn-danger btn-del" type="button">delete</button>
-                <button class="btn btn-primary btn-edit" type="button">edit</button>                
+				<button class="btn btn-del" type="button"><i class="fa fa-trash-o" style="font-size:25px;color:red"></i></button>
+                <button class="btn btn-edit" type="button"><i class="material-icons" style="font-size:25px;color:blue">edit</i></button> 
+                <span class="not-complete">not complete</span>               
 			</div>`;
 
         mails_records_wrapper.append(content);
         counterMailRecords++;
+        mails_records_wrapper.find('.mail_record span.not-complete').css('visibility', 'hidden');
+        mails_records_wrapper.find('.mail_record').on('focusout', checkCompleteMailRecord);
 
-        if (Object.keys(record).length == 3) {
+        if (Object.keys(record).length == 4) {
             $('.mail_record:last > label > input').attr('checked', 'checked');
         } else {
             if (record.mail_addr_type === 'A') {
@@ -261,8 +277,8 @@ function setButtonsAndInputs() {
         $(this).parent('div').remove();
     });
     $('.btn-edit').click(function () {
-        $(this).parent("div").find(':input').attr("disabled", false);
-        $(this).parent("div").css({'background-color': 'white', 'border': '0'});
+        $(this).parent('div').find(':input').attr("disabled", false);
+        $(this).parent("div").find('label input').trigger('change');
     });
 }
 

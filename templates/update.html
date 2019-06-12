@@ -9,7 +9,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="stylesheet" href="/static/style/menu.css">
     <link rel="stylesheet" href="/static/style/update_style.css">
@@ -38,46 +39,67 @@
                     {% endfor %}
                 </select>
             </div>
-        <div class="col-sm-1">
-            <button type="submit" id="btn-save" class="btn btn-info">SAVE</button>
+            <div class="col-sm-1">
+                <button type="submit" id="btn-save" class="btn btn-info">SAVE</button>
+            </div>
         </div>
-        </div>
-
+        <hr>
         <div class="row">
             <div class="col-sm-2">
                 <h4><strong>Domain</strong></h4>
             </div>
-            <div class="col-sm-9" style="border: none">
+            <div class="col-sm-8">
                 <div class="form-inline domain-field">
-
                 </div>
             </div>
+            <div class="col-sm-2 errors alert alert-danger" style="background-color: darkgrey; font-size: 12px">
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
+            </div>
         </div>
-
+        <hr>
         <div class="row">
             <div class="col-sm-2">
                 <h4>Name server records</h4>
                 <button class="add" type="button" id="add_ns">New record</button>
             </div>
-            <div class="col-sm-9 ns_record_wrapper">
+            <div class="col-sm-8 ns_record_wrapper">
+            </div>
+            <div class="col-sm-2 errors alert alert-danger" style="background-color: darkgrey; font-size: 12px">
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
             </div>
         </div>
-
+        <hr>
         <div class="row">
             <div class="col-sm-2">
                 <h4>Host records</h4>
                 <button class="add" type="button" id="add_host">New record</button>
             </div>
-            <div class="col-sm-9 host_record_wrapper">
+            <div class="col-sm-8 host_record_wrapper">
+            </div>
+            <div class="col-sm-2 errors alert alert-danger" style="background-color: darkgrey; font-size: 12px">
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
             </div>
         </div>
+        <hr>
         <div class="row">
             <div class="col-sm-2">
                 <h4>Mail records</h4>
                 <button class="add" type="button" id="add_mail">New record</button>
             </div>
-
-            <div class="col-sm-9 mail_record_wrapper">
+            <div class="col-sm-8 mail_record_wrapper">
+            </div>
+            <div class="col-sm-2 errors alert alert-danger" style="background-color: darkgrey; font-size: 12px">
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
+                <p>invalid ipv4 address 123.123.215.154</p>
             </div>
         </div>
     </form>

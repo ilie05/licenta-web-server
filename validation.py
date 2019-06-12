@@ -50,12 +50,12 @@ class Validation(object):
         raise Exception("\'{0}\' is not a valid {1}!".format(name, input_type))
 
     @staticmethod
-    def check_domain_name(name: str) -> str:
+    def check_domain_name(name: str, input_type: str) -> str:
         name = str(name)
         if re.match(REGEX_domain, name):
             return name
 
-        raise Exception("\'{0}\' is not a valid DOMAIN NAME!".format(name))
+        raise Exception("\'{0}\' is not a valid {1}!".format(name, input_type))
 
     @staticmethod
     def check_ipv4(address: str) -> str:
