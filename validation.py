@@ -34,13 +34,11 @@ class Validation(object):
         email = email.split('@')
         if len(email) > 1:
             if regex_res:
-                if email[1] == domain:
-                    return email[0]
-                else:
-                    return '.'.join(email)
+                return '.'.join(email)
             else:
                 raise Exception("\'{}\' is not a valid email address!".format(original_email))
-        return str(''.join(email)).replace('@', '.')
+        print("asd")
+        return str(''.join(email))
 
     @staticmethod
     def check_host_name(name: str, input_type: str) -> str:
@@ -77,9 +75,6 @@ class Validation(object):
 
     @staticmethod
     def check_ttl(ttl: str, max_val: int) -> int:
-        if not ttl:
-            return 0
-
         try:
             ttl = int(ttl)
         except:
@@ -92,17 +87,17 @@ class Validation(object):
 
 
 if __name__ == '__main__':
-    # try:
-    #     res1 = Validation.check_email('maimsail.com')
-    #     print(res1)
-    # except Exception as e:
-    #     print(str(e))
-
     try:
-        res2 = Validation.check_domain_name('asds', 'DOMAIN')
-        print(res2)
+        res1 = Validation.check_email('wcd@sd.ror.com', 'dom.com')
+        print(res1)
     except Exception as e:
         print(str(e))
+
+    # try:
+    #     res2 = Validation.check_domain_name('asds', 'DOMAIN')
+    #     print(res2)
+    # except Exception as e:
+    #     print(str(e))
 
     # try:
     #     res3 = Validation.check_ttl('-8')

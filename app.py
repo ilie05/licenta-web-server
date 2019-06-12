@@ -282,7 +282,10 @@ def process_form(data):
             continue
 
         try:
-            temp_dict['ns_ttl'] = Validation.check_ttl(record['ns_ttl'], 1209600)
+            if record['ns_ttl'] == '':
+                temp_dict['ns_ttl'] = None
+            else:
+                temp_dict['ns_ttl'] = Validation.check_ttl(record['ns_ttl'], 1209600)
         except Exception as e:
             temp_dict_error['ns_ttl'] = str(e)
 
@@ -322,12 +325,18 @@ def process_form(data):
             continue
 
         try:
-            temp_dict['host_name_ttl'] = Validation.check_ttl(record['host_name_ttl'], 86400)
+            if record['host_name_ttl'] == '':
+                temp_dict['host_name_ttl'] = None
+            else:
+                temp_dict['host_name_ttl'] = Validation.check_ttl(record['host_name_ttl'], 86400)
         except Exception as e:
             temp_dict_error['host_name_ttl'] = str(e)
 
         try:
-            temp_dict['host_cname'] = Validation.check_host_name(record['host_cname'], 'CNAME')
+            if record['host_cname'] != '':
+                temp_dict['host_cname'] = Validation.check_host_name(record['host_cname'], 'CNAME')
+            else:
+                temp_dict['host_cname'] = None
         except Exception as e:
             temp_dict_error['host_cname'] = str(e)
 
@@ -373,12 +382,18 @@ def process_form(data):
             temp_dict_error['mail_host'] = str(e)
 
         try:
-            temp_dict['mail_ttl'] = Validation.check_ttl(record['mail_ttl'], 3024000)
+            if record['mail_ttl'] == '':
+                temp_dict['mail_ttl'] = None
+            else:
+                temp_dict['mail_ttl'] = Validation.check_ttl(record['mail_ttl'], 3024000)
         except Exception as e:
             temp_dict_error['mail_ttl'] = str(e)
 
         try:
-            temp_dict['mail_cname'] = Validation.check_host_name(record['mail_cname'], 'CNAME')
+            if record['mail_cname'] != '':
+                temp_dict['mail_cname'] = Validation.check_host_name(record['mail_cname'], 'CNAME')
+            else:
+                temp_dict['mail_cname'] = None
         except Exception as e:
             temp_dict_error['mail_cname'] = str(e)
 

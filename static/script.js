@@ -21,7 +21,7 @@ $(document).ready(function () {
     });
 });
 
-function openTab(evt, tabName) {
+function openTab(evt, tabName, _this) {
     let i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
@@ -33,6 +33,8 @@ function openTab(evt, tabName) {
     }
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
+
+    $(_this).find('span').css('display', 'none');
 }
 
 function mySubmitFunction() {
@@ -62,6 +64,9 @@ function mySubmitFunction() {
         hosts_records: hosts_records,
         mails_records: mails_records
     };
+
+    // clear errors from page
+    $('.tabcontent .errors').empty();
 
     ajaxRequest(obj_to_send);
 

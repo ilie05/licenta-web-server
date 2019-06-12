@@ -4,6 +4,7 @@
     <title>DNS MANAGER</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -26,14 +27,11 @@
 <div>
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'domain')" id="defaultOpen">Domain</button>
-        <button class="tablinks" onclick="openTab(event, 'hosts')" id="btn-tab-host">Hosts</button>
-        <button class="tablinks" onclick="openTab(event, 'mail')" id="btn-tab-mail">Mail</button>
-        <button class="tablinks" onclick="openTab(event, 'other')">Other</button>
+        <button class="tablinks" onclick="openTab(event, 'hosts', this)" id="btn-tab-host">Hosts <span>&#8594;</span></button>
+        <button class="tablinks" onclick="openTab(event, 'mail', this)" id="btn-tab-mail">Mail <span>&#8594;</span></button>
+        <button class="tablinks" onclick="openTab(event, 'other', this)">Other</button>
     </div>
-
 </div>
-
-
 
 <form id="record_form" onsubmit="return mySubmitFunction()" method="post">
     <div class="container-fluid">
@@ -41,28 +39,34 @@
             <div class="errors alert alert-danger">
             </div>
             <div class="row">
-                <div class="col-sm" style="background-color:#e4fbf9;">
+                <div class="col-sm">
                     <h2>Base data</h2>
-                    <div class="domain-field form-inline">
-                        <label for="domain_name">Domain name</label>
+                    <div class="domain-field input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Domain name</span>
+                        </div>
                         <input name="domain_name" id="domain_name" class="form-control" type="text"
                                pattern="[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+" required
                                oninvalid="this.setCustomValidity('Invalid domain name!')"
-                               oninput="this.setCustomValidity('')">
-                        <label for="admin_mail">Admin mail</label>
-                        <input name="admin_mail" id="admin_mail" class="form-control" type="email" required>
+                               oninput="this.setCustomValidity('')" placeholder="Enter domain name...">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Admin email</span>
+                        </div>
+                        <input name="admin_mail" id="admin_mail" class="form-control" type="email" required
+                            placeholder="Enter admin email address...">
 
-                        <label for="domain_ttl">Default TTL</label>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Default TTL</span>
+                        </div>
                         <input name="domain_ttl" id="domain_ttl" class="form-control" type="number" min="0"
-                               max="3024000"
-                               placeholder="Time to live..." required>
+                               max="3024000" placeholder="Enter time to live..." required>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm ns_record_wrapper" style="background-color:#438a90;">
+                <div class="col-sm ns_record_wrapper">
                     <h2>Name Servers</h2>
-                    <button type="button" id="add_ns" class="btn btn-info">New Record</button>
+                    <button type="button" id="add_ns" class="w3-button w3-xlarge w3-teal">+</button>
                     <div class="ns_record form-inline">
                         <input type="text" name="ns1" id="ns1" placeholder="Name server..." class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
@@ -77,6 +81,7 @@
                         <!--1209600 sec. or 2 weeks  max ttl for name server-->
                         <input type="number" name="ns_ttl1" id="ns_ttl1" placeholder="Time to live..." min="0"
                                max="1209600" class="form-control">
+                        <span class="not-complete">not complete</span>
                     </div>
                 </div>
             </div>
@@ -86,9 +91,9 @@
             <div class="errors alert alert-danger">
             </div>
             <div class="row">
-                <div class="col-sm host_record_wrapper" style="background-color:#438a90;">
+                <div class="col-sm host_record_wrapper">
                     <h2>Hosts </h2>
-                    <button type="button" id="add_host" class="btn btn-info">New Record</button>
+                    <button type="button" id="add_host" class="w3-button w3-xlarge w3-teal">+</button>
                     <div class="host_record form-inline">
                         <input type="text" name="host_name1" id="host_name1" placeholder="Host name..." class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
@@ -112,10 +117,10 @@
             <div class="errors alert alert-danger">
             </div>
             <div class="row">
-                <div class="col-sm mail_record_wrapper" style="background-color:#438a90;">
+                <div class="col-sm mail_record_wrapper">
                     <h2>Mails </h2>
-                    <button type="button" id="add_mail" class="btn btn-info">New Record</button>
-                    <div class="mail_record form-inline">
+                    <button type="button" id="add_mail" class="w3-button w3-xlarge w3-teal">+</button>
+                    <div class="mail_record form-inline" style="width: 80%">
                         <input name="mail_host1" id="mail_host1" type="text" placeholder="Mail host name..." class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
                         <select name="mail_addr_type1" id="mail_addr_type1" class="form-control">
@@ -145,6 +150,10 @@
         </div>
     </div>
 </form>
-<button type="submit" id="btn-submit" class="btn btn-success" form="record_form">Submit</button>
+
+<div style="position: absolute; bottom: 0 !important; left: 0; width: 20%">
+    <button type="submit" id="btn-submit" class="btn btn-success" form="record_form">Submit</button>
+</div>
+
 </body>
 </html>

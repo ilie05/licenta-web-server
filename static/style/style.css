@@ -1,6 +1,7 @@
-body {
+html, body {
     font-family: "Lato", sans-serif;
     margin: 0 auto;
+    height: 100%;
 }
 
 /* Style the tab */
@@ -40,10 +41,9 @@ body {
 /* Style the tab content */
 .tabcontent {
     float: right;
-    padding: 0 12px;
+    padding:0 0 0 20px;
     border: 1px;
     width: 70%;
-
     height: 100%;
 }
 
@@ -51,10 +51,11 @@ body {
     padding: 10px;
     width: 90%;
     margin: 0 auto;
-    /*float: right;*/
+    text-align: center;
+    border-bottom: 1px solid darkgray;
 }
 
-.btn-info {
+.w3-button {
     margin-left: 2%;
 }
 
@@ -63,6 +64,7 @@ body {
     padding-top: 20px;
     padding-bottom: 20px;
     margin-bottom: 20px;
+    background-color: #D3D3D3;
 }
 
 h2 {
@@ -84,7 +86,6 @@ input[type=number] {
 
 #btn-submit {
     width: 30%;
-    position: absolute;
     bottom: 0;
     left: 0;
 }
@@ -95,10 +96,18 @@ input:disabled, select:disabled {
 
 .domain-field{
     margin: auto;
+    width: 80%;
 }
 
 .errors{
+    width: 50%;
+    margin: auto;
     display: none;
+}
+
+.form-control{
+    margin: 5px;
+    border-bottom: 1px;
 }
 
 .errors p {
@@ -106,4 +115,15 @@ input:disabled, select:disabled {
     padding : 0;
     margin : 0;
     text-align: center;
+}
+
+.domain-field input{
+    margin-bottom: 20px !important;
+    margin-top: 8px ;
+}
+
+button span{
+    color: green;
+    float: right;
+    font-weight: bold;
 }
