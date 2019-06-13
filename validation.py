@@ -11,34 +11,12 @@ REGEX_domain = '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
 
 class Validation(object):
     @staticmethod
-    def check_email(email: str, domain: str = '') -> str:
+    def check_email(email: str) -> str:
         email = str(email)
-        original_email = email
-        if email == '':
-            raise Exception("Admin email address must not be empty! ")
+        if re.match(REGEX_email, email):
+            return email.replace('@', '.')
 
-        regex_res = re.match(REGEX_email, email)
-        if domain == '':
-            if '@' in email:
-                if regex_res:
-                    return email.replace('@', '.')
-                else:
-                    raise Exception("\'{}\' is not a valid email address!".format(original_email))
-            else:
-                pattern = r'^{0}(\.{0})*\.?$'.format(REGEX_label)
-                if re.match(pattern, email):
-                    return email
-                else:
-                    raise Exception("\'{}\' is not a valid email address!".format(original_email))
-
-        email = email.split('@')
-        if len(email) > 1:
-            if regex_res:
-                return '.'.join(email)
-            else:
-                raise Exception("\'{}\' is not a valid email address!".format(original_email))
-        print("asd")
-        return str(''.join(email))
+        raise Exception("\'{}\' is not a valid email address!".format(email))
 
     @staticmethod
     def check_host_name(name: str, input_type: str) -> str:
@@ -88,7 +66,7 @@ class Validation(object):
 
 if __name__ == '__main__':
     try:
-        res1 = Validation.check_email('wcd@sd.ror.com', 'dom.com')
+        res1 = Validation.check_email('boil.com', 'email@boil.com')
         print(res1)
     except Exception as e:
         print(str(e))

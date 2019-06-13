@@ -240,8 +240,7 @@ def process_form(data):
 
     # check admin email
     try:
-        zone_doc['domain_details']['admin_mail'] = Validation.check_email(domain_details['admin_mail'],
-                                                                          domain_details['domain_name'])
+        zone_doc['domain_details']['admin_mail'] = Validation.check_email(domain_details['admin_mail'])
         zone_doc['domain_details']['original_admin_mail'] = domain_details['admin_mail']
     except Exception as e:
         error['domain_details']['admin_mail'] = str(e)
