@@ -380,6 +380,13 @@ def process_form(data):
                     temp_dict['mail_host'] = Validation.check_host_name(record['mail_host'], 'MAIL HOST NAME')
                 except Exception as e:
                     temp_dict_error['mail_host'] = str(e)
+                try:
+                    if record['mail_cname'] != '':
+                        temp_dict['mail_cname'] = Validation.check_host_name(record['mail_cname'], 'CNAME')
+                    else:
+                        temp_dict['mail_cname'] = None
+                except Exception as e:
+                    temp_dict_error['mail_cname'] = str(e)
             else:
                 try:
                     temp_dict['mail_host'] = Validation.check_domain_name(record['mail_host'], 'External Mail Server')
@@ -395,14 +402,6 @@ def process_form(data):
                 temp_dict['mail_ttl'] = Validation.check_ttl(record['mail_ttl'], 3024000)
         except Exception as e:
             temp_dict_error['mail_ttl'] = str(e)
-
-        try:
-            if record['mail_cname'] != '':
-                temp_dict['mail_cname'] = Validation.check_host_name(record['mail_cname'], 'CNAME')
-            else:
-                temp_dict['mail_cname'] = None
-        except Exception as e:
-            temp_dict_error['mail_cname'] = str(e)
 
         try:
             temp_dict['mail_preference'] = Validation.check_ttl(record['mail_preference'], 65535)

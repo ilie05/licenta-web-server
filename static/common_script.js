@@ -3,13 +3,17 @@ function CheckChangeEvent() {
     let input_target = $('#mail_ip_host' + order_of_this)[0];
     let select_target = $('#mail_addr_type' + order_of_this)[0];
     let host_domain_input = $('#mail_host' + order_of_this);
+    let mail_cname = $('#mail_cname' + order_of_this)[0];
 
     if (this.checked) {
         input_target.disabled = true;
         input_target.value = '';
         select_target.disabled = true;
+        mail_cname.disabled = true;
+        mail_cname.value = '';
         host_domain_input.attr('placeholder', 'Domain name...');
     } else {
+        mail_cname.disabled = false;
         select_target.disabled = false;
         input_target.disabled = false;
         host_domain_input.attr('placeholder', 'Mail host name...');
@@ -181,7 +185,6 @@ function getMailRecords(numRecords) {
                     mail_host: mail_host.value,
                     mail_preference: mail_preference.value,
                     mail_ttl: mail_ttl.value,
-                    mail_cname: mail_cname.value,
                     external: true
                 });
             }

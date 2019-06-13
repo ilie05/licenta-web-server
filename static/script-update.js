@@ -258,7 +258,8 @@ function createMailRecords(mails_records) {
         mails_records_wrapper.find('.mail_record span.not-complete').css('visibility', 'hidden');
         mails_records_wrapper.find('.mail_record').on('focusout', checkCompleteMailRecord);
 
-        if (Object.keys(record).length == 4) {
+        if (Object.keys(record).length == 3) {
+            console.log("asfsdf")
             $('.mail_record:last > label > input').attr('checked', 'checked');
         } else {
             if (record.mail_addr_type === 'A') {
