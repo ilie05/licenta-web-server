@@ -257,6 +257,10 @@ def process_form(data):
     temp_dict = {}
     temp_dict_error = {}
 
+    # Must be at least one NS record for SOA resource record used in zone file
+    if not len(ns_records):
+        error['ns_records'].append({'ns': 'Must be at least one Name Server record!'})
+
     for _, record in enumerate(ns_records):
         try:
             temp_dict['ns'] = Validation.check_host_name(record['ns'], 'NAME SERVER')

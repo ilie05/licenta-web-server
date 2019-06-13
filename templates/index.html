@@ -68,16 +68,16 @@
                     <h2>Name Servers</h2>
                     <button type="button" id="add_ns" class="w3-button w3-xlarge w3-teal">+</button>
                     <div class="ns_record form-inline">
-                        <input type="text" name="ns1" id="ns1" placeholder="Name server..." class="form-control"
+                        <input type="text" name="ns1" id="ns1" placeholder="Name server..." class="form-control" required
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
 
-                        <select name="ns_ip_addr_type1" id="ns_ip_addr_type1" class="form-control">
+                        <select name="ns_ip_addr_type1" id="ns_ip_addr_type1" class="form-control" required>
                             <option disabled selected value="">Ip record type</option>
                             <option value="A">A</option>
                             <option value="AAAA">AAAA</option>
                         </select>
 
-                        <input type="text" name="ns_ip1" id="ns_ip1" placeholder="Ip address..." class="form-control">
+                        <input type="text" name="ns_ip1" id="ns_ip1" placeholder="Ip address..." class="form-control" required>
                         <!--1209600 sec. or 2 weeks  max ttl for name server-->
                         <input type="number" name="ns_ttl1" id="ns_ttl1" placeholder="Time to live..." min="0"
                                max="1209600" class="form-control">
