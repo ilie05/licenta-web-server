@@ -28,7 +28,7 @@ function addNsRecord(counterNsRecords) {
 		        </select >
 				<input type="text" name="ns_ip${counterNsRecords}" id="ns_ip${counterNsRecords}" placeholder="Ip address..." class="form-control">					
 				<input type="number" name="ns_ttl${counterNsRecords}" id="ns_ttl${counterNsRecords}" placeholder="Time to live..."
-				    min="0" max="1209600" class="form-control">
+				    min="0" max="1209600" class="form-control form-control">
 			    <span class="not-complete">not complete</span>
 		  	</div>`;
     $(".ns_record_wrapper").append(content);
@@ -50,7 +50,7 @@ function addHostRecord(counterHostRecords) {
 				    placeholder="Time to live..." min="0" max="86400" class="form-control">
                 <input type="text" name="host_cname${counterHostRecords}" id="host_cname${counterHostRecords}" placeholder="CNAME..." class="form-control"
                     pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
-                <span class="not-complete">not complete</span>
+                <span class="not-complete form-control">not complete</span>
 			</div>`;
     $(".host_record_wrapper").append(content);
     $('.host_record').on('focusout', checkCompleteHostRecord);
@@ -77,7 +77,7 @@ function addMailRecord(counterMailRecords) {
                 <label class="form-check-label">
                     <input type="checkbox" class="external-check  form-check-input" name="external${counterMailRecords}">External record
                 </label> 
-                <span class="not-complete">not complete</span>
+                <span class="not-complete form-control">not complete</span>
 			</div>`;
     $(".mail_record_wrapper").append(content);
     $('.mail_record').on('focusout', checkCompleteMailRecord);
@@ -225,7 +225,6 @@ function checkCompleteMailRecord() {
     let mail_ip_host = $('#mail_ip_host' + index)[0];
     let mail_preference = $('#mail_preference' + index)[0];
     let external = $('[name=external' + index + ']');
-
     if (!external.is(':checked')) {
         if (mail_host.value && mail_addr_type.val() && mail_ip_host.value && mail_preference.value) {
             $(this).find('span').css('visibility', 'hidden');

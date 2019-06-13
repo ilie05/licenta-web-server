@@ -32,3 +32,7 @@ li a:hover:not(.active) {
     color: #FF8800;
     font-style: italic;
 }
+
+.not-complete{
+    all: unset;
+}

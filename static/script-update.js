@@ -4,6 +4,7 @@ let counterMailRecords = 1;
 let enableAddButtons = false;
 
 $(document).ready(function () {
+    $('.errors').css('display', 'none');
     $('#domain_name').popover();
     $('#btn-save').css('display', 'none');
 
@@ -91,6 +92,7 @@ function createDomainContent(data) {
 
     $(".domain-field").append(content);
     $(".domain-field :input").attr("disabled", true);
+    $('#btn-delete-domain').attr('title', 'Delete Domain record from DNS Server');
 
     $('#btn-delete-domain').click(function () {
         emptyPage();
@@ -214,7 +216,6 @@ function createMailRecords(mails_records) {
     let content, mails_records_wrapper = $('.mail_record_wrapper');
     let ttl, cname, ip_addr;
     mails_records.forEach((record) => {
-        console.log(record);
         if (Object.keys(record).length === 6) {
             ip_addr = record.mail_ip_host;
         } else {
@@ -305,7 +306,7 @@ function saveFunction() {
         hosts_records: hosts_records,
         mails_records: mails_records
     };
-
+    console.log("Object to send: ");
     console.log(obj_to_send);
     ajaxRequest(obj_to_send);
     return false;
@@ -342,4 +343,56 @@ function ajaxRequest(data_to_send) {
             }
         }
     });
+}
+
+function displayErrors(errors) {
+    $('.row .errors').empty();
+
+    let div = $('.domain-field').parent('div').parent('.row').find('.errors');
+    console.log(div)
+    div.css('display', 'none');
+    if (Object.keys(errors.domain_details).length != 0) {
+        console.log(JSON.stringify(errors.domain_details))
+        div.css('display', 'block');
+        for (const key in errors.domain_details) {
+            let value = errors.domain_details[key];
+            div.append(`<p>${value}</p>`);
+        }
+    }
+
+    div = $('.ns_record_wrapper').parent('.row').find('.errors');
+    div.css('display', 'none');
+    if (errors.ns_records && errors.ns_records.length) {
+        div.css('display', 'block');
+        errors.ns_records.forEach((record) => {
+            for (const key in record) {
+                let value = record[key];
+                div.append(`<p>${value}</p>`);
+            }
+        });
+    }
+
+    div = $('.host_record_wrapper').parent('.row').find('.errors');
+    div.css('display', 'none');
+    if (errors.hosts_records && errors.hosts_records.length) {
+        div.css('display', 'block');
+        errors.hosts_records.forEach((record) => {
+            for (const key in record) {
+                let value = record[key];
+                div.append(`<p>${value}</p>`);
+            }
+        });
+    }
+
+    div = $('.mail_record_wrapper').parent('.row').find('.errors');
+    div.css('display', 'none');
+    if (errors.mails_records && errors.mails_records.length) {
+        div.css('display', 'block');
+        errors.mails_records.forEach((record) => {
+            for (const key in record) {
+                let value = record[key];
+                div.append(`<p>${value}</p>`);
+            }
+        });
+    }
 }
