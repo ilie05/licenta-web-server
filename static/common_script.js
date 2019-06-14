@@ -1,22 +1,38 @@
 function CheckChangeEvent() {
-    let order_of_this = this.name.substring(8);
-    let input_target = $('#mail_ip_host' + order_of_this)[0];
-    let select_target = $('#mail_addr_type' + order_of_this)[0];
-    let host_domain_input = $('#mail_host' + order_of_this);
-    let mail_cname = $('#mail_cname' + order_of_this)[0];
+    let type = this.name.split('_')[0];
+    if (type == 'mail') {
+        let order_of_this = this.name.substring(13);
+        let input_target = $('#mail_ip_host' + order_of_this)[0];
+        let host_domain_input = $('#mail_host' + order_of_this);
+        let mail_cname = $('#mail_cname' + order_of_this)[0];
 
-    if (this.checked) {
-        input_target.disabled = true;
-        input_target.value = '';
-        select_target.disabled = true;
-        mail_cname.disabled = true;
-        mail_cname.value = '';
-        host_domain_input.attr('placeholder', 'Domain name...');
-    } else {
-        mail_cname.disabled = false;
-        select_target.disabled = false;
-        input_target.disabled = false;
-        host_domain_input.attr('placeholder', 'Mail host name...');
+        if (this.checked) {
+            input_target.disabled = true;
+            input_target.value = '';
+            mail_cname.disabled = true;
+            mail_cname.value = '';
+            host_domain_input.attr('placeholder', 'Domain name...');
+            host_domain_input.attr('pattern', '[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\\.[a-zA-Z]{2,})+');
+        } else {
+            mail_cname.disabled = false;
+            input_target.disabled = false;
+            host_domain_input.attr('placeholder', 'Mail host name...');
+            host_domain_input.attr('pattern', '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$');
+        }
+    }else if(type == 'ns'){
+        let order_of_this = this.name.substring(11);
+        let ns = $('#ns' + order_of_this);
+        let ns_ip = $('#ns_ip' + order_of_this)[0];
+
+        if (this.checked) {
+            ns_ip.disabled = true;
+            ns.attr('placeholder', 'External NS domain...');
+            ns.attr('pattern', '[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\\.[a-zA-Z]{2,})+');
+        } else {
+            ns_ip.disabled = false;
+            ns.attr('placeholder', 'Internal NS label...');
+            ns.attr('pattern', '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$');
+        }
     }
 }
 
@@ -25,18 +41,17 @@ function addNsRecord(counterNsRecords) {
 		  	<div class='ns_record form-inline'>
 				<input type="text" name="ns${counterNsRecords}" id="ns${counterNsRecords}" placeholder="Name server..." class="form-control"
 				    pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
-		        <select name="ns_ip_addr_type${counterNsRecords}" id="ns_ip_addr_type${counterNsRecords}" class="form-control">
-		        	<option disabled selected value="">Ip record type</option>
-		            <option value="A">A</option>
-		        	<option value="AAAA">AAAA</option>
-		        </select >
-				<input type="text" name="ns_ip${counterNsRecords}" id="ns_ip${counterNsRecords}" placeholder="Ip address..." class="form-control">					
+				<input type="text" name="ns_ip${counterNsRecords}" id="ns_ip${counterNsRecords}" placeholder="ipv4 or ipv6 address..." class="form-control">					
 				<input type="number" name="ns_ttl${counterNsRecords}" id="ns_ttl${counterNsRecords}" placeholder="Time to live..."
 				    min="0" max="1209600" class="form-control form-control">
+                <label class="form-check-label">
+                    <input type="checkbox" class="external-check form-check-input" name="ns_external${counterNsRecords}">External
+                </label>
 			    <span class="not-complete">not complete</span>
 		  	</div>`;
     $(".ns_record_wrapper").append(content);
     $('.ns_record').on('focusout', checkCompleteNsRecord);
+    $('.external-check').change(CheckChangeEvent);
 }
 
 function addHostRecord(counterHostRecords) {
@@ -44,14 +59,10 @@ function addHostRecord(counterHostRecords) {
 			<div class="host_record form-inline">
 				<input type="text" name="host_name${counterHostRecords}" id="host_name${counterHostRecords}" placeholder="Host name..." class="form-control"
 				    pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
-		        <select name="host_name_ip_addr_type${counterHostRecords}" id="host_name_ip_addr_type${counterHostRecords}" class="form-control">
-		        	<option disabled selected value="">IP record type</option>
-		            <option value="A">A</option>
-		        	<option value="AAAA">AAAA</option>
-		        </select >
-				<input type="text" name="host_name_ip${counterHostRecords}" id="host_name_ip${counterHostRecords}" placeholder="Ip address..." class="form-control">					
+				<input type="text" name="host_name_ip${counterHostRecords}" id="host_name_ip${counterHostRecords}" placeholder="ipv4 or ipv6 address..." class="form-control">					
 				<input type="number" name="host_name_ttl${counterHostRecords}" id="host_name_ttl${counterHostRecords}" 
 				    placeholder="Time to live..." min="0" max="86400" class="form-control">
+				<input type="text" name="host_txt${counterHostRecords}" id="host_txt${counterHostRecords}" placeholder="TXT record..." class="form-control">
                 <input type="text" name="host_cname${counterHostRecords}" id="host_cname${counterHostRecords}" placeholder="CNAME..." class="form-control"
                     pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
                 <span class="not-complete form-control">not complete</span>
@@ -65,21 +76,17 @@ function addMailRecord(counterMailRecords) {
 			<div class="mail_record form-inline">
 			    <input name="mail_host${counterMailRecords}" id="mail_host${counterMailRecords}" type="text" placeholder="Mail host name..." class="form-control"
 			        pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
-			    <select name="mail_addr_type${counterMailRecords}" id="mail_addr_type${counterMailRecords}" class="form-control">
-                    <option disabled selected value="">IP record type</option>
-                    <option value="A">A</option>
-                    <option value="AAAA">AAAA</option>
-                </select >
 			    <input name="mail_ip_host${counterMailRecords}" id="mail_ip_host${counterMailRecords}" type="text" 
 			        placeholder="Mail host ip address..." class="form-control">
 			    <input name="mail_preference${counterMailRecords}" id="mail_preference${counterMailRecords}" 
 			        type="number" min="0" max="65535" placeholder="Preference..." class="form-control">
 			    <input type="number" name="mail_ttl${counterMailRecords}" id="mail_ttl${counterMailRecords}" 
 			        class="form-control" placeholder="Time to live..." min="0" max="3024000">
+			        <input type="text" name="mail_txt${counterMailRecords}" id="mail_txt${counterMailRecords}" placeholder="TXT record..." class="form-control">
                 <input name="mail_cname${counterMailRecords}" id="mail_cname${counterMailRecords}" type="text" placeholder="CNAME..." class="form-control"
                     pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
                 <label class="form-check-label">
-                    <input type="checkbox" class="external-check  form-check-input" name="external${counterMailRecords}">External record
+                    <input type="checkbox" class="external-check  form-check-input" name="mail_external${counterMailRecords}">External
                 </label> 
                 <span class="not-complete form-control">not complete</span>
 			</div>`;
@@ -99,17 +106,27 @@ function getNsRecords(numRecords) {
             continue;
         }
         let ns = $('#ns' + index)[0];
-        let ns_ip_addr_type = $('#ns_ip_addr_type' + index + ' :selected');
         let ns_ip = $('#ns_ip' + index)[0];
         let ns_ttl = $('#ns_ttl' + index)[0];
+        let ns_external = $('[name=ns_external' + index + ']');
 
-        if (ns.value && ns_ip_addr_type.val() && ns_ip.value) {
-            ns_records.push({
-                ns: ns.value,
-                ns_ip_addr_type: ns_ip_addr_type.val(),
-                ns_ip: ns_ip.value,
-                ns_ttl: ns_ttl.value
-            });
+        if (!ns_external.is(':checked')) {
+            if (ns.value && ns_ip.value) {
+                ns_records.push({
+                    ns: ns.value,
+                    ns_ip: ns_ip.value,
+                    ns_ttl: ns_ttl.value,
+                    external: false
+                });
+            }
+        } else {
+            if (ns.value) {
+                ns_records.push({
+                    ns: ns.value,
+                    ns_ttl: ns_ttl.value,
+                    external: true
+                });
+            }
         }
         index++;
         count++;
@@ -128,18 +145,18 @@ function getHostRecords(numRecords) {
             continue;
         }
         let host_name = $('#host_name' + index)[0];
-        let host_name_ip_addr_type = $('#host_name_ip_addr_type' + index + ' :selected');
         let host_name_ip = $('#host_name_ip' + index)[0];
         let host_name_ttl = $('#host_name_ttl' + index)[0];
         let host_cname = $('#host_cname' + index)[0];
+        let host_txt = $('#host_txt' + index)[0];
 
-        if (host_name.value && host_name_ip_addr_type.val() && host_name_ip.value) {
+        if (host_name.value && host_name_ip.value) {
             hosts_records.push({
                 host_name: host_name.value,
-                host_name_ip_addr_type: host_name_ip_addr_type.val(),
                 host_name_ip: host_name_ip.value,
                 host_name_ttl: host_name_ttl.value,
-                host_cname: host_cname.value
+                host_cname: host_cname.value,
+                host_txt: host_txt.value
             });
         }
         index++;
@@ -160,22 +177,22 @@ function getMailRecords(numRecords) {
         }
 
         let mail_host = $('#mail_host' + index)[0];
-        let mail_addr_type = $('#mail_addr_type' + index + ' :selected');
         let mail_ip_host = $('#mail_ip_host' + index)[0];
         let mail_preference = $('#mail_preference' + index)[0];
         let mail_ttl = $('#mail_ttl' + index)[0];
-        let external = $('[name=external' + index + ']');
+        let mail_external = $('[name=mail_external' + index + ']');
         let mail_cname = $('#mail_cname' + index)[0];
+        let mail_txt = $('#mail_txt' + index)[0];
 
-        if (!external.is(':checked')) {
-            if (mail_host.value && mail_addr_type.val() && mail_ip_host.value && mail_preference.value) {
+        if (!mail_external.is(':checked')) {
+            if (mail_host.value && mail_ip_host.value && mail_preference.value) {
                 mails_records.push({
                     mail_host: mail_host.value,
-                    mail_addr_type: mail_addr_type.val(),
                     mail_ip_host: mail_ip_host.value,
                     mail_preference: mail_preference.value,
                     mail_ttl: mail_ttl.value,
                     mail_cname: mail_cname.value,
+                    mail_txt: mail_txt.value,
                     external: false
                 });
             }
@@ -185,6 +202,7 @@ function getMailRecords(numRecords) {
                     mail_host: mail_host.value,
                     mail_preference: mail_preference.value,
                     mail_ttl: mail_ttl.value,
+                    mail_txt: mail_txt.value,
                     external: true
                 });
             }
@@ -198,23 +216,30 @@ function getMailRecords(numRecords) {
 function checkCompleteNsRecord() {
     let index = $(this).find('input:first')[0].name.substring(2);
     let ns = $('#ns' + index)[0];
-    let ns_ip_addr_type = $('#ns_ip_addr_type' + index + ' :selected');
     let ns_ip = $('#ns_ip' + index)[0];
+    let ns_external = $('[name=ns_external' + index + ']');
 
-    if(ns.value && ns_ip_addr_type.val() && ns_ip.value){
-        $(this).find('span').css('visibility', 'hidden');
-    }else{
-        $(this).find('span').css('visibility', 'visible');
+    if (!ns_external.is(':checked')) {
+        if (ns.value && ns_ip.value) {
+            $(this).find('span').css('visibility', 'hidden');
+        } else {
+            $(this).find('span').css('visibility', 'visible');
+        }
+    } else {
+        if (ns.value) {
+            $(this).find('span').css('visibility', 'hidden');
+        } else {
+            $(this).find('span').css('visibility', 'visible');
+        }
     }
 }
 
 function checkCompleteHostRecord() {
     let index = $(this).find('input:first')[0].name.substring(9);
     let host_name = $('#host_name' + index)[0];
-    let host_name_ip_addr_type = $('#host_name_ip_addr_type' + index + ' :selected');
     let host_name_ip = $('#host_name_ip' + index)[0];
 
-    if(host_name.value && host_name_ip_addr_type.val() && host_name_ip.value){
+    if(host_name.value && host_name_ip.value){
         $(this).find('span').css('visibility', 'hidden');
     }else{
         $(this).find('span').css('visibility', 'visible');
@@ -224,12 +249,12 @@ function checkCompleteHostRecord() {
 function checkCompleteMailRecord() {
     let index = $(this).find('input:first')[0].name.substring(9);
     let mail_host = $('#mail_host' + index)[0];
-    let mail_addr_type = $('#mail_addr_type' + index + ' :selected');
     let mail_ip_host = $('#mail_ip_host' + index)[0];
     let mail_preference = $('#mail_preference' + index)[0];
-    let external = $('[name=external' + index + ']');
-    if (!external.is(':checked')) {
-        if (mail_host.value && mail_addr_type.val() && mail_ip_host.value && mail_preference.value) {
+    let mail_external = $('[name=mail_external' + index + ']');
+
+    if (!mail_external.is(':checked')) {
+        if (mail_host.value && mail_ip_host.value && mail_preference.value) {
             $(this).find('span').css('visibility', 'hidden');
         } else {
             $(this).find('span').css('visibility', 'visible');

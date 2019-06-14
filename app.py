@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response, session
+from flask import Flask, render_template, request, redirect, url_for, make_response, session, escape
 from flask import jsonify
 from validation import Validation
 from bson.objectid import ObjectId
 import os
 import re
+import ipaddress
 import json
 import sys
 import pymongo
@@ -51,6 +52,7 @@ def record():
         print("Before processing")
         print(data)
         status, data = process_form(data)
+
         data['modify_time'] = datetime.datetime.utcnow()
         data['status'] = 'insert'
         if status:
@@ -229,16 +231,22 @@ def process_form(data):
     hosts_records = data['hosts_records']
     mails_records = data['mails_records']
 
+    SUBNET = ''
     # check domain name
     error['domain_details'] = {}
     zone_doc['domain_details'] = {}
+    error['ns_records'] = []
+    zone_doc['ns_records'] = []
+    error['hosts_records'] = []
+    zone_doc['hosts_records'] = []
+    error['mails_records'] = []
+    zone_doc['mails_records'] = []
 
     try:
         zone_doc['domain_details']['domain_name'] = Validation.check_domain_name(domain_details['domain_name'], 'Domain Name')
     except Exception as e:
         error['domain_details']['domain_name'] = str(e)
 
-    # check admin email
     try:
         zone_doc['domain_details']['admin_mail'] = Validation.check_email(domain_details['admin_mail'])
         zone_doc['domain_details']['original_admin_mail'] = domain_details['admin_mail']
@@ -250,9 +258,20 @@ def process_form(data):
     except Exception as e:
         error['domain_details']['domain_ttl'] = str(e)
 
+    try:
+        zone_doc['domain_details']['domain_ip_address'] = ipaddress.ip_address(domain_details['domain_ip_address'])
+    except Exception as e:
+        error['domain_details']['domain_ip_address'] = str(e)
+
+    subnet = domain_details['domain_ip_address'] + '/' + domain_details['domain_subnet']
+    try:
+        SUBNET = ipaddress.ip_network(subnet)
+        zone_doc['domain_details']['domain_subnet'] = str(SUBNET)
+    except Exception as e:
+        error['domain_details']['domain_subnet'] = 'Domain address {}'.format(str(e))
+        return False, error
+
     # check name server records
-    error['ns_records'] = []
-    zone_doc['ns_records'] = []
     temp_dict = {}
     temp_dict_error = {}
 
@@ -261,28 +280,33 @@ def process_form(data):
         error['ns_records'].append({'ns': 'Must be at least one Name Server record!'})
 
     for _, record in enumerate(ns_records):
-        try:
-            temp_dict['ns'] = Validation.check_host_name(record['ns'], 'NAME SERVER')
-        except Exception as e:
-            temp_dict_error['ns'] = str(e)
-
-        try:
-            if record['ns_ip_addr_type'] == 'A':
-                try:
-                    temp_dict['ns_ip_addr_type'] = 'A'
-                    temp_dict['ns_ip'] = Validation.check_ipv4(record['ns_ip'])
-                except Exception as e:
-                    temp_dict_error['ns_ip'] = str(e)
-            elif record['ns_ip_addr_type'] == 'AAAA':
-                try:
-                    temp_dict['ns_ip_addr_type'] = 'AAAA'
-                    temp_dict['ns_ip'] = Validation.check_ipv6(record['ns_ip'])
-                except Exception as e:
-                    temp_dict_error['ns_ip'] = str(e)
-            else:
-                temp_dict_error['ns_ip_addr_type'] = 'Wrong type of Ip address!'
-        except:
+        if type(record['external']) != bool:
+            temp_dict['external'] = 'Wrong Type External Record!'
             continue
+
+        if record['external']:
+            try:
+                temp_dict['ns'] = Validation.check_domain_name(record['ns'], 'NAME SERVER')
+            except Exception as e:
+                temp_dict_error['ns'] = str(e)
+        else:
+            try:
+                temp_dict['ns'] = Validation.check_host_name(record['ns'], 'NAME SERVER')
+            except Exception as e:
+                temp_dict_error['ns'] = str(e)
+
+            try:
+                ns_ip = ipaddress.ip_address(record['ns_ip'])
+                if ns_ip.version != SUBNET.version:
+                    temp_dict_error['ns_ip'] = "{0} address must be IPv{1} type".format(record['ns_ip'], SUBNET.version)
+                else:
+                    if ns_ip in SUBNET:
+                        temp_dict['ns_ip'] = str(ns_ip)
+                    else:
+                        temp_dict_error['ns_ip'] = "'{0}' address is not in the '{1}' network".format(record['ns_ip'],
+                                                                                                      str(SUBNET))
+            except Exception as e:
+                temp_dict_error['ns_ip'] = str(e)
 
         try:
             if record['ns_ttl'] == '':
@@ -299,8 +323,6 @@ def process_form(data):
         temp_dict = {}
 
     # check host records
-    error['hosts_records'] = []
-    zone_doc['hosts_records'] = []
     temp_dict = {}
     temp_dict_error = {}
 
@@ -309,23 +331,20 @@ def process_form(data):
             temp_dict['host_name'] = Validation.check_host_name(record['host_name'], 'HOST NAME')
         except Exception as e:
             temp_dict_error['host_name'] = str(e)
+
         try:
-            if record['host_name_ip_addr_type'] == 'A':
-                try:
-                    temp_dict['host_name_ip_addr_type'] = 'A'
-                    temp_dict['host_name_ip'] = Validation.check_ipv4(record['host_name_ip'])
-                except Exception as e:
-                    temp_dict_error['host_name_ip'] = str(e)
-            elif record['host_name_ip_addr_type'] == 'AAAA':
-                try:
-                    temp_dict['host_name_ip_addr_type'] = 'AAAA'
-                    temp_dict['host_name_ip'] = Validation.check_ipv6(record['host_name_ip'])
-                except Exception as e:
-                    temp_dict_error['host_name_ip'] = str(e)
+            host_name_ip = ipaddress.ip_address(record['host_name_ip'])
+            if host_name_ip.version != SUBNET.version:
+                temp_dict_error['host_name_ip'] = "{0} address must be IPv{1} type".format(record['host_name_ip'],
+                                                                                           SUBNET.version)
             else:
-                temp_dict_error['host_name_ip_addr_type'] = 'Wrong type of Ip address!'
-        except:
-            continue
+                if host_name_ip in SUBNET:
+                    temp_dict['host_name_ip'] = str(host_name_ip)
+                else:
+                    temp_dict_error['host_name_ip'] = "'{0}' address is not in the '{1}' network".format(
+                        record['host_name_ip'], str(SUBNET))
+        except Exception as e:
+            temp_dict_error['host_name_ip'] = str(e)
 
         try:
             if record['host_name_ttl'] == '':
@@ -343,6 +362,17 @@ def process_form(data):
         except Exception as e:
             temp_dict_error['host_cname'] = str(e)
 
+        try:
+            if record['host_txt'] != '':
+                for c in ('\n', '\r', '\t'):
+                    if c in record['host_txt']:
+                        raise Exception("'{}' invalid character in TXT record".format(c))
+                temp_dict['host_txt'] = record['host_txt']
+            else:
+                temp_dict['host_txt'] = None
+        except Exception as e:
+            temp_dict_error['host_txt'] = str(e)
+
         if len(temp_dict_error.keys()) > 0:
             error['hosts_records'].append(temp_dict_error)
         temp_dict_error = {}
@@ -350,8 +380,6 @@ def process_form(data):
         temp_dict = {}
 
     # check mail records
-    error['mails_records'] = []
-    zone_doc['mails_records'] = []
     temp_dict = {}
     temp_dict_error = {}
 
@@ -362,24 +390,11 @@ def process_form(data):
                 continue
 
             if not record['external']:
-                if record['mail_addr_type'] == 'A':
-                    try:
-                        temp_dict['mail_addr_type'] = 'A'
-                        temp_dict['mail_ip_host'] = Validation.check_ipv4(record['mail_ip_host'])
-                    except Exception as e:
-                        temp_dict_error['mail_ip_host'] = str(e)
-                elif record['mail_addr_type'] == 'AAAA':
-                    try:
-                        temp_dict['mail_addr_type'] = 'AAAA'
-                        temp_dict['mail_ip_host'] = Validation.check_ipv6(record['mail_ip_host'])
-                    except Exception as e:
-                        temp_dict_error['mail_ip_host'] = str(e)
-                else:
-                    temp_dict_error['mail_addr_type'] = 'Wrong type of Ip address!'
                 try:
                     temp_dict['mail_host'] = Validation.check_host_name(record['mail_host'], 'MAIL HOST NAME')
                 except Exception as e:
                     temp_dict_error['mail_host'] = str(e)
+
                 try:
                     if record['mail_cname'] != '':
                         temp_dict['mail_cname'] = Validation.check_host_name(record['mail_cname'], 'CNAME')
@@ -387,6 +402,20 @@ def process_form(data):
                         temp_dict['mail_cname'] = None
                 except Exception as e:
                     temp_dict_error['mail_cname'] = str(e)
+
+                try:
+                    mail_ip_host = ipaddress.ip_address(record['mail_ip_host'])
+                    if mail_ip_host.version != SUBNET.version:
+                        temp_dict_error['mail_ip_host'] = "{0} address must be IPv{1} type".format(
+                            record['mail_ip_host'], SUBNET.version)
+                    else:
+                        if mail_ip_host in SUBNET:
+                            temp_dict['mail_ip_host'] = str(mail_ip_host)
+                        else:
+                            temp_dict_error['mail_ip_host'] = "'{0}' address is not in the '{1}' network".format(
+                                record['mail_ip_host'], str(SUBNET))
+                except Exception as e:
+                    temp_dict_error['mail_ip_host'] = str(e)
             else:
                 try:
                     temp_dict['mail_host'] = Validation.check_domain_name(record['mail_host'], 'External Mail Server')
@@ -408,13 +437,25 @@ def process_form(data):
         except Exception as e:
             temp_dict_error['mail_preference'] = str(e).replace('TTL', 'Preference')
 
+        try:
+            if record['mail_txt'] != '':
+                for c in ('\n', '\r', '\t'):
+                    if c in record['mail_txt']:
+                        raise Exception("'{}' invalid character in TXT record".format(c))
+                temp_dict['mail_txt'] = record['mail_txt']
+            else:
+                temp_dict['mail_txt'] = None
+        except Exception as e:
+            temp_dict_error['mail_txt'] = str(e)
+
         if len(temp_dict_error.keys()) > 0:
             error['mails_records'].append(temp_dict_error)
         temp_dict_error = {}
         zone_doc['mails_records'].append(temp_dict)
         temp_dict = {}
 
-    if len(error['domain_details'].keys()) + len(error['ns_records']) + len(error['hosts_records']) + len(error['mails_records']) > 0:
+    if len(error['domain_details'].keys()) + len(error['ns_records']) + len(error['hosts_records']) + len(
+            error['mails_records']) > 0:
         return False, error
     else:
         return True, zone_doc

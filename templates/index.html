@@ -29,7 +29,6 @@
         <button class="tablinks" onclick="openTab(event, 'domain')" id="defaultOpen">Domain</button>
         <button class="tablinks" onclick="openTab(event, 'hosts', this)" id="btn-tab-host">Hosts <span>&#8594;</span></button>
         <button class="tablinks" onclick="openTab(event, 'mail', this)" id="btn-tab-mail">Mail <span>&#8594;</span></button>
-        <button class="tablinks" onclick="openTab(event, 'other', this)">Other</button>
     </div>
 </div>
 
@@ -60,6 +59,16 @@
                         </div>
                         <input name="domain_ttl" id="domain_ttl" class="form-control" type="number" min="0"
                                max="3024000" placeholder="Enter time to live..." required>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Ip address / subnet</span>
+                        </div>
+                        <div class="form-inline">
+                            <input type="text" name="domain_ip_address" id="domain_ip_address" class="form-control"
+                                   style="width: 50%" placeholder=" Enter ipv4 or ipv6 address..." required>
+                            <input type="number" name="domain_subnet" id="domain_subnet" class="form-control" required
+                                   style="width: 15%;display: inline-block;" min="0" max="128" placeholder="Enter subnet...">
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -68,19 +77,14 @@
                     <h2>Name Servers</h2>
                     <button type="button" id="add_ns" class="w3-button w3-xlarge w3-teal">+</button>
                     <div class="ns_record form-inline">
-                        <input type="text" name="ns1" id="ns1" placeholder="Name server..." class="form-control" required
+                        <input type="text" name="ns1" id="ns1" placeholder="Internal NS label..." class="form-control" required
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
-
-                        <select name="ns_ip_addr_type1" id="ns_ip_addr_type1" class="form-control" required>
-                            <option disabled selected value="">Ip record type</option>
-                            <option value="A">A</option>
-                            <option value="AAAA">AAAA</option>
-                        </select>
-
-                        <input type="text" name="ns_ip1" id="ns_ip1" placeholder="Ip address..." class="form-control" required>
+                        <input type="text" name="ns_ip1" id="ns_ip1" placeholder="ipv4 or ipv6 address..." class="form-control" required>
                         <!--1209600 sec. or 2 weeks  max ttl for name server-->
                         <input type="number" name="ns_ttl1" id="ns_ttl1" placeholder="Time to live..." min="0"
                                max="1209600" class="form-control">
+                            <input type="checkbox" class="external-check form-check-input" name="ns_external1">External
+                        </label>
                         <span class="not-complete">not complete</span>
                     </div>
                 </div>
@@ -97,15 +101,11 @@
                     <div class="host_record form-inline">
                         <input type="text" name="host_name1" id="host_name1" placeholder="Host name..." class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
-                        <select name="host_name_ip_addr_type1" id="host_name_ip_addr_type1" class="form-control">
-                            <option disabled selected value="">IP record type</option>
-                            <option value="A">A</option>
-                            <option value="AAAA">AAAA</option>
-                        </select>
-                        <input type="text" name="host_name_ip1" id="host_name_ip1" placeholder="Ip address..." class="form-control">
+                        <input type="text" name="host_name_ip1" id="host_name_ip1" placeholder="ipv4 or ipv6 address..." class="form-control">
                         <!--86400 sec. or 1 day  max ttl for host name-->
                         <input type="number" name="host_name_ttl1" id="host_name_ttl1" placeholder="Time to live..."
                                min="0" max="86400" class="form-control">
+                        <input type="text" name="host_txt1" id="host_txt1" placeholder="TXT record..." class="form-control">
                         <input type="text" name="host_cname1" id="host_cname1" placeholder="CNAME..." class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
                         <span class="not-complete">not complete</span>
@@ -124,31 +124,22 @@
                     <div class="mail_record form-inline">
                         <input name="mail_host1" id="mail_host1" type="text" placeholder="Mail host name..." class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
-                        <select name="mail_addr_type1" id="mail_addr_type1" class="form-control">
-                            <option disabled selected value="">IP record type</option>
-                            <option value="A">A</option>
-                            <option value="AAAA">AAAA</option>
-                        </select>
                         <input name="mail_ip_host1" id="mail_ip_host1" type="text" placeholder="Mail host ip address..." class="form-control">
                         <input name="mail_preference1" id="mail_preference1" type="number" min="0" max="65535"
                                placeholder="Preference..." class="form-control">
                         <!--3024000 sec. or 5 weeks  max ttl for mail-->
                         <input type="number" name="mail_ttl1" id="mail_ttl1" placeholder="Time to live..." min="0"
                                max="3024000" class="form-control">
+                        <input type="text" name="mail_txt1" id="mail_txt1" placeholder="TXT record..." class="form-control">
                         <input name="mail_cname1" id="mail_cname1" type="text" placeholder="CNAME..." class="form-control"
                                pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
                         <label class="form-check-label">
-                            <input type="checkbox" class="external-check form-check-input" name="external1">External
-                            record
+                            <input type="checkbox" class="external-check form-check-input" name="mail_external1">External
                         </label>
                         <span class="not-complete">not complete</span>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id="other" class="tabcontent">
-            <p>Other records soon...</p>
         </div>
     </div>
 </form>

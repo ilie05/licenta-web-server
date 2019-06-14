@@ -1,11 +1,7 @@
 import re
 
 REGEX_email = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
-
-# max. 63 characters; must not start or end with hyphen
 REGEX_label = r'[a-zA-Z90-9]([a-zA-Z90-9-]{0,61}[a-zA-Z90-9])?'
-REGEX_ipv4 = r'^\d{1,3}(\.\d{1,3}){3}$'
-VALID_CHARACTERS_IPV6 = 'ABCDEFabcdef:0123456789'
 REGEX_domain = '^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$'
 
 
@@ -34,24 +30,6 @@ class Validation(object):
             return name
 
         raise Exception("\'{0}\' is not a valid {1}!".format(name, input_type))
-
-    @staticmethod
-    def check_ipv4(address: str) -> str:
-        address = str(address)
-        if re.match(REGEX_ipv4, address):
-            return address
-
-        raise Exception("\'{}\' is not a valid IPv4 address!".format(address))
-
-    @staticmethod
-    def check_ipv6(address: str) -> str:
-        address = str(address)
-        address_list = address.split(':')
-        if len(address_list) == 8 and all(len(current) <= 4 for current in address_list) and all(
-                current in VALID_CHARACTERS_IPV6 for current in address):
-            return address
-
-        raise Exception("\'{}\' is not a valid IPv6 address!".format(address))
 
     @staticmethod
     def check_ttl(ttl: str, max_val: int) -> int:

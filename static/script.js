@@ -47,11 +47,12 @@ function mySubmitFunction() {
     let domain_name = $('#domain_name')[0];
     let admin_mail = $('#admin_mail')[0];
     let domain_ttl = $('#domain_ttl')[0];
+    let domain_ip_address = $('#domain_ip_address')[0];
+    let domain_subnet = $('#domain_subnet')[0];
 
     //get Name Server Records
     let name_servers = $('.ns_record_wrapper .ns_record');
     let ns_records = getNsRecords(name_servers.length);
-
 
     //get HOST Records
     let hosts = $('.host_record_wrapper .host_record');
@@ -61,7 +62,13 @@ function mySubmitFunction() {
     let mails = $('.mail_record_wrapper .mail_record');
     let mails_records = getMailRecords(mails.length);
 
-    let domain_details = {domain_name: domain_name.value, admin_mail: admin_mail.value, domain_ttl: domain_ttl.value};
+    let domain_details = {
+        domain_name: domain_name.value,
+        admin_mail: admin_mail.value,
+        domain_ttl: domain_ttl.value,
+        domain_ip_address: domain_ip_address.value,
+        domain_subnet: domain_subnet.value
+    };
 
     let obj_to_send = {
         domain_details: domain_details,
@@ -107,9 +114,11 @@ function ajaxRequest(data_to_send) {
 }
 
 function displayErrors(errors) {
+    console.log("ERRORS:")
+    console.log(errors)
     let div = $('#domain .errors');
     div.css('display', 'none');
-    if (errors.domain_details) {
+    if (Object.keys(errors.domain_details).length != 0) {
         div.css('display', 'block');
         for (const key in errors.domain_details) {
             let value = errors.domain_details[key];
