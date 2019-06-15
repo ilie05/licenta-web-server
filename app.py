@@ -3,6 +3,7 @@ from flask import jsonify
 from validation import Validation
 from bson.objectid import ObjectId
 import os
+import math
 import re
 import ipaddress
 import json
@@ -213,6 +214,18 @@ def page_not_found(e):
     return render_template('errors/405_not_allowed.html')
 
 
+def make_reverse_zone(network, subnet):
+    if network.version == 4:
+        num_secv = 4
+    else:
+        num_secv = 16
+
+    secv = math.floor(int(subnet) / 8)
+    rr_subnet = network.reverse_pointer
+
+    return '.'.join(rr_subnet.split('/')[1].split('.')[(num_secv - secv):])
+
+
 def process_form(data):
     zone_doc = {}
     error = {}
@@ -259,7 +272,7 @@ def process_form(data):
         error['domain_details']['domain_ttl'] = str(e)
 
     try:
-        zone_doc['domain_details']['domain_ip_address'] = ipaddress.ip_address(domain_details['domain_ip_address'])
+        zone_doc['domain_details']['domain_ip_address'] = str(ipaddress.ip_address(domain_details['domain_ip_address']))
     except Exception as e:
         error['domain_details']['domain_ip_address'] = str(e)
 
@@ -270,6 +283,8 @@ def process_form(data):
     except Exception as e:
         error['domain_details']['domain_subnet'] = 'Domain address {}'.format(str(e))
         return False, error
+
+    zone_doc['domain_details']['domain_reverse_addr'] = make_reverse_zone(SUBNET, domain_details['domain_subnet'])
 
     # check name server records
     temp_dict = {}
@@ -302,6 +317,7 @@ def process_form(data):
                 else:
                     if ns_ip in SUBNET:
                         temp_dict['ns_ip'] = str(ns_ip)
+                        temp_dict['ns_ip_reverse'] = str(ns_ip.reverse_pointer)
                     else:
                         temp_dict_error['ns_ip'] = "'{0}' address is not in the '{1}' network".format(record['ns_ip'],
                                                                                                       str(SUBNET))
@@ -325,6 +341,8 @@ def process_form(data):
     # check host records
     temp_dict = {}
     temp_dict_error = {}
+    print("AA")
+
 
     for _, record in enumerate(hosts_records):
         try:
@@ -340,6 +358,7 @@ def process_form(data):
             else:
                 if host_name_ip in SUBNET:
                     temp_dict['host_name_ip'] = str(host_name_ip)
+                    temp_dict['host_name_ip_reverse'] = str(host_name_ip.reverse_pointer)
                 else:
                     temp_dict_error['host_name_ip'] = "'{0}' address is not in the '{1}' network".format(
                         record['host_name_ip'], str(SUBNET))
@@ -411,6 +430,7 @@ def process_form(data):
                     else:
                         if mail_ip_host in SUBNET:
                             temp_dict['mail_ip_host'] = str(mail_ip_host)
+                            temp_dict['mail_ip_host_reverse'] = str(mail_ip_host.reverse_pointer)
                         else:
                             temp_dict_error['mail_ip_host'] = "'{0}' address is not in the '{1}' network".format(
                                 record['mail_ip_host'], str(SUBNET))
