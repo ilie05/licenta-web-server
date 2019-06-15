@@ -82,7 +82,7 @@ function addMailRecord(counterMailRecords) {
 			        type="number" min="0" max="65535" placeholder="Preference..." class="form-control">
 			    <input type="number" name="mail_ttl${counterMailRecords}" id="mail_ttl${counterMailRecords}" 
 			        class="form-control" placeholder="Time to live..." min="0" max="3024000">
-			        <input type="text" name="mail_txt${counterMailRecords}" id="mail_txt${counterMailRecords}" placeholder="TXT record..." class="form-control">
+			    <input type="text" name="mail_txt${counterMailRecords}" id="mail_txt${counterMailRecords}" placeholder="TXT record..." class="form-control">
                 <input name="mail_cname${counterMailRecords}" id="mail_cname${counterMailRecords}" type="text" placeholder="CNAME..." class="form-control"
                     pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
                 <label class="form-check-label">

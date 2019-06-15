@@ -87,8 +87,16 @@ function createDomainContent(data) {
         <label for="domain_ttl">Default TTL</label>
         <input name="domain_ttl" id="domain_ttl" class="form-control" type="number" value="${domain_details.domain_ttl}" min="0" max="3024000"
                placeholder="Time to live..." required>
+
         <button class="btn" type="button" id="btn-delete-domain"><i class="fa fa-trash-o" style="font-size:25px;color:red"></i></button>
-        <button class="btn btn-edit" type="button"><i class="material-icons" style="font-size:25px;color:blue">edit</i></button>`;
+        <button class="btn btn-edit" type="button"><i class="material-icons" style="font-size:25px;color:blue">edit</i></button>
+            <div class="form-inline" style="margin: 10px;">
+            Ip address / subnet &nbsp;
+            <input type="text" name="domain_ip_address" id="domain_ip_address" class="form-control" value="${domain_details.domain_ip_address}"
+                style="width: 50%" placeholder=" Enter ipv4 or ipv6 address..." required>&nbsp;
+            <input type="number" name="domain_subnet" id="domain_subnet" class="form-control" required value="${domain_details.domain_subnet.split('/')[1]}"
+                style="width: 25%;display: inline-block;" min="0" max="128" placeholder="Enter subnet...">
+        </div>`;
 
     $(".domain-field").append(content);
     $(".domain-field :input").attr("disabled", true);
@@ -134,22 +142,23 @@ function createDomainContent(data) {
 }
 
 function createNsRecord(ns_records) {
-    let content, ns_record_wrapper = $('.ns_record_wrapper');
+    let content, ip_addr, ns_record_wrapper = $('.ns_record_wrapper');
 
     ns_records.forEach((record) => {
+        if (Object.keys(record).length === 4) ip_addr = record.ns_ip;
+        else ip_addr = '';
         content = `
 		  	<div class='ns_record form-inline'>
 				<input type="text" name="ns${counterNsRecords}" id="ns${counterNsRecords}" placeholder="Name server..." 
 				    class="form-control" value="${record.ns}"
 				    pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
-		        <select name="ns_ip_addr_type${counterNsRecords}" id="ns_ip_addr_type${counterNsRecords}" class="form-control">
-		            <option value="A">A</option>
-		        	<option value="AAAA">AAAA</option>
-		        </select >
 				<input type="text" name="ns_ip${counterNsRecords}" id="ns_ip${counterNsRecords}" 
-				    placeholder="Ip address..." class="form-control" value="${record.ns_ip}">					
+				    placeholder="Ip address..." class="form-control" value="${ip_addr}">					
 				<input type="number" name="ns_ttl${counterNsRecords}" id="ns_ttl${counterNsRecords}" value="${record.ns_ttl}"
 				    placeholder="Time to live..." min="0" max="1209600" class="form-control">
+                <label class="form-check-label">
+                    <input type="checkbox" class="external-check form-check-input" name="ns_external${counterNsRecords}">External
+                </label>
 			    <button class="btn btn-del" type="button"><i class="fa fa-trash-o" style="font-size:25px;color:red"></i></button>
                 <button class="btn btn-edit" type="button"><i class="material-icons" style="font-size:25px;color:blue">edit</i></button>
                 <span class="not-complete">not complete</span>
@@ -159,37 +168,36 @@ function createNsRecord(ns_records) {
         ns_record_wrapper.find('.ns_record span.not-complete').css('visibility', 'hidden');
         ns_record_wrapper.find('.ns_record').on('focusout', checkCompleteNsRecord);
 
-        if (record.ns_ip_addr_type === 'A') {
-            $('.ns_record:last > select > option[value="A"]').attr('selected', 'selected');
-        } else {
-            $('.ns_record:last > select > option[value="AAAA"]').attr('selected', 'selected');
+        if (Object.keys(record).length == 2) {
+            $('.ns_record:last > label > input').attr('checked', 'checked');
         }
+        $(".external-check").change(CheckChangeEvent);
     });
     $(".ns_record :input").attr("disabled", true);
 }
 
 function createHostRecords(hosts_records) {
     let content, host_record_wrapper = $('.host_record_wrapper');
-    let ttl, cname;
+    let ttl, cname, txt;
     hosts_records.forEach((record) => {
         ttl = record.host_name_ttl;
         if(!ttl) ttl = '';
         cname = record.host_cname;
         if(!cname) cname = '';
+        txt = record.host_txt;
+        if(!txt) txt = '';
 
         content = `
 			<div class="host_record form-inline">
 				<input type="text" name="host_name${counterHostRecords}" id="host_name${counterHostRecords}" 
 				    placeholder="Host name..." class="form-control" value="${record.host_name}"
 				    pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
-		        <select name="host_name_ip_addr_type${counterHostRecords}" id="host_name_ip_addr_type${counterHostRecords}" class="form-control">
-		            <option value="A">A</option>
-		        	<option value="AAAA">AAAA</option>
-		        </select>
 				<input type="text" name="host_name_ip${counterHostRecords}" id="host_name_ip${counterHostRecords}" 
 				    placeholder="Ip address..." class="form-control" value="${record.host_name_ip}">					
 				<input type="number" name="host_name_ttl${counterHostRecords}" id="host_name_ttl${counterHostRecords}" 
 				    placeholder="Time to live..." min="0" max="86400" class="form-control" value="${ttl}">
+				<input type="text" name="host_txt${counterHostRecords}" id="host_txt${counterHostRecords}" 
+				    placeholder="TXT record..." class="form-control" value="${txt}">
                 <input type="text" name="host_cname${counterHostRecords}" id="host_cname${counterHostRecords}" 
 				    placeholder="CNAME..." class="form-control" value="${cname}"
 				    pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
@@ -202,46 +210,37 @@ function createHostRecords(hosts_records) {
         counterHostRecords++;
         host_record_wrapper.find('.host_record span.not-complete').css('visibility', 'hidden');
         host_record_wrapper.find('.host_record').on('focusout', checkCompleteHostRecord);
-
-        if (record.host_name_ip_addr_type === 'A') {
-            $('.host_record:last > select > option[value="A"]').attr('selected', 'selected');
-        } else {
-            $('.host_record:last > select > option[value="AAAA"]').attr('selected', 'selected');
-        }
     });
     $(".host_record :input").attr("disabled", true);
 }
 
 function createMailRecords(mails_records) {
     let content, mails_records_wrapper = $('.mail_record_wrapper');
-    let ttl, cname, ip_addr;
+    let ttl, cname, ip_addr, txt;
     mails_records.forEach((record) => {
-        if (Object.keys(record).length === 6) {
-            ip_addr = record.mail_ip_host;
-        } else {
-            ip_addr = '';
-        }
+        if (Object.keys(record).length === 7) ip_addr = record.mail_ip_host;
+        else ip_addr = '';
+
         ttl = record.mail_ttl;
         if(!ttl) ttl = '';
         cname = record.mail_cname;
         if(!cname) cname = '';
+        txt = record.mail_txt;
+        if(!txt) txt = '';
 
         content = `
 			<div class="mail_record form-inline">
 			    <input name="mail_host${counterMailRecords}" id="mail_host${counterMailRecords}" type="text" 
 			        placeholder="Mail host name..." class="form-control" value="${record.mail_host}"
 			        pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
-			    <select name="mail_addr_type${counterMailRecords}" id="mail_addr_type${counterMailRecords}" class="form-control">
-                    <option disabled selected value="">IP record type</option>
-                    <option value="A">A</option>
-                    <option value="AAAA">AAAA</option>
-                </select >
 			    <input name="mail_ip_host${counterMailRecords}" id="mail_ip_host${counterMailRecords}" type="text" 
 			        placeholder="Mail host ip address..." class="form-control" value="${ip_addr}">
 			    <input name="mail_preference${counterMailRecords}" id="mail_preference${counterMailRecords}" 
 			        type="number" min="0" max="65535" placeholder="Preference..." class="form-control" value="${record.mail_preference}">
 			    <input type="number" name="mail_ttl${counterMailRecords}" id="mail_ttl${counterMailRecords}" 
 			        class="form-control" placeholder="Time to live..." min="0" max="3024000" value="${ttl}">
+			    <input type="text" name="mail_txt${counterMailRecords}" id="mail_txt${counterMailRecords}" 
+			        placeholder="TXT record..." class="form-control" value="${txt}">
 			    <input name="mail_cname${counterMailRecords}" id="mail_cname${counterMailRecords}" type="text" 
 			        placeholder="CNAME..." class="form-control" value="${cname}"
 			        pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
@@ -258,14 +257,8 @@ function createMailRecords(mails_records) {
         mails_records_wrapper.find('.mail_record span.not-complete').css('visibility', 'hidden');
         mails_records_wrapper.find('.mail_record').on('focusout', checkCompleteMailRecord);
 
-        if (Object.keys(record).length == 3) {
+        if (Object.keys(record).length == 4) {
             $('.mail_record:last > label > input').attr('checked', 'checked');
-        } else {
-            if (record.mail_addr_type === 'A') {
-                $('.mail_record:last > select > option[value="A"]').attr('selected', 'selected');
-            } else {
-                $('.mail_record:last > select > option[value="AAAA"]').attr('selected', 'selected');
-            }
         }
         $(".external-check").change(CheckChangeEvent);
     });
@@ -288,6 +281,8 @@ function saveFunction() {
     let domain_name = $('#domain_name')[0];
     let admin_mail = $('#admin_mail')[0];
     let domain_ttl = $('#domain_ttl')[0];
+    let domain_ip_address = $('#domain_ip_address')[0];
+    let domain_subnet = $('#domain_subnet')[0];
 
     let name_servers = $('.ns_record_wrapper .ns_record');
     let ns_records = getNsRecords(name_servers.length);
@@ -298,7 +293,13 @@ function saveFunction() {
     let mails = $('.mail_record_wrapper .mail_record');
     let mails_records = getMailRecords(mails.length);
 
-    let domain_details = {domain_name: domain_name.value, admin_mail: admin_mail.value, domain_ttl: domain_ttl.value};
+    let domain_details = {
+        domain_name: domain_name.value,
+        admin_mail: admin_mail.value,
+        domain_ttl: domain_ttl.value,
+        domain_ip_address: domain_ip_address.value,
+        domain_subnet: domain_subnet.value
+    };
 
     let obj_to_send = {
         domain_details: domain_details,
