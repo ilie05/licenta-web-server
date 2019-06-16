@@ -282,6 +282,10 @@ def process_form(data):
     try:
         SUBNET = ipaddress.ip_network(subnet)
         zone_doc['domain_details']['domain_subnet'] = str(SUBNET)
+        if SUBNET.version == 4:
+            zone_doc['domain_details']['record_type'] = 'A'
+        else:
+            zone_doc['domain_details']['record_type'] = 'AAAA'
     except Exception as e:
         error['domain_details']['domain_subnet'] = 'Domain address {}'.format(str(e))
         return False, error
@@ -416,6 +420,8 @@ def process_form(data):
                 for c in ('\n', '\r', '\t'):
                     if c in record['host_txt']:
                         raise Exception("'{}' invalid character in TXT record".format(c))
+                if len(record['host_txt']) > 255:
+                    raise Exception("TEXT record can not be longer than 255 characters!")
                 temp_dict['host_txt'] = record['host_txt']
             else:
                 temp_dict['host_txt'] = None
@@ -486,6 +492,19 @@ def process_form(data):
                                 record['mail_ip_host'], str(SUBNET))
                 except Exception as e:
                     temp_dict_error['mail_ip_host'] = str(e)
+
+                try:
+                    if record['mail_txt'] != '':
+                        for c in ('\n', '\r', '\t'):
+                            if c in record['mail_txt']:
+                                raise Exception("'{}' invalid character in TXT record".format(c))
+                        if len(record['mail_txt']) > 255:
+                            raise Exception("TEXT record can not be longer than 255 characters!")
+                        temp_dict['mail_txt'] = record['mail_txt']
+                    else:
+                        temp_dict['mail_txt'] = None
+                except Exception as e:
+                    temp_dict_error['mail_txt'] = str(e)
             else:
                 try:
                     temp_dict['mail_host'] = Validation.check_domain_name(record['mail_host'], 'External Mail Server')
@@ -506,17 +525,6 @@ def process_form(data):
             temp_dict['mail_preference'] = Validation.check_ttl(record['mail_preference'], 65535)
         except Exception as e:
             temp_dict_error['mail_preference'] = str(e).replace('TTL', 'Preference')
-
-        try:
-            if record['mail_txt'] != '':
-                for c in ('\n', '\r', '\t'):
-                    if c in record['mail_txt']:
-                        raise Exception("'{}' invalid character in TXT record".format(c))
-                temp_dict['mail_txt'] = record['mail_txt']
-            else:
-                temp_dict['mail_txt'] = None
-        except Exception as e:
-            temp_dict_error['mail_txt'] = str(e)
 
         if len(temp_dict_error.keys()) > 0:
             error['mails_records'].append(temp_dict_error)
