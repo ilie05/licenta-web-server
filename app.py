@@ -281,7 +281,6 @@ def process_form(data):
 
     try:
         SUBNET = ipaddress.ip_network(subnet)
-        zone_doc['domain_details']['domain_subnet'] = str(SUBNET)
         if SUBNET.version == 4:
             zone_doc['domain_details']['record_type'] = 'A'
         else:
