@@ -133,15 +133,14 @@ def update_record():
             print("create new domain and delete the old one")
             # update status for the old document to 'delete'
             collection.update_one({'_id': ObjectId(_id)}, {'$set': {'status': 'delete'}})
-            data['status'] = 'insert'
         else:
             print('The domains correspond, update the old document')
             collection.delete_one({'_id': ObjectId(_id)})
-            data['status'] = 'update'
 
         print("Insert updated or new record into collection")
         # insert updated or new record into collection
         data['modify_time'] = datetime.datetime.utcnow()
+        data['status'] = 'insert'
         collection.insert_one(data)
         return make_response('', 200)
     except:
@@ -281,6 +280,7 @@ def process_form(data):
 
     try:
         SUBNET = ipaddress.ip_network(subnet)
+        zone_doc['domain_details']['domain_subnet'] = str(SUBNET)
         if SUBNET.version == 4:
             zone_doc['domain_details']['record_type'] = 'A'
         else:
