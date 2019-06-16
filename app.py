@@ -305,10 +305,10 @@ def process_form(data):
         if type(record['external']) != bool:
             temp_dict['external'] = 'Wrong Type External Record!'
             continue
-        if record['ns'] in label_duplicate:
+        if record['ns'].lower() in label_duplicate:
             temp_dict_error['ns'] = "Duplicate '{}' label".format(record['ns'])
         else:
-            label_duplicate.append(record['ns'])
+            label_duplicate.append(record['ns'].lower())
 
         if record['external']:
             try:
@@ -364,10 +364,10 @@ def process_form(data):
     for _, record in enumerate(hosts_records):
         try:
             temp_dict['host_name'] = Validation.check_host_name(record['host_name'], 'HOST NAME')
-            if record['host_name'] in label_duplicate:
+            if record['host_name'].lower() in label_duplicate:
                 temp_dict_error['host_name'] = "Duplicate '{}' label".format(record['host_name'])
             else:
-                label_duplicate.append(record['host_name'])
+                label_duplicate.append(record['host_name'].lower())
         except Exception as e:
             temp_dict_error['host_name'] = str(e)
 
@@ -406,10 +406,10 @@ def process_form(data):
         try:
             if record['host_cname'] != '':
                 temp_dict['host_cname'] = Validation.check_host_name(record['host_cname'], 'CNAME')
-                if record['host_cname'] in label_duplicate:
+                if record['host_cname'].lower() in label_duplicate:
                     temp_dict_error['host_cname'] = "'{}' label for CNAME already exists".format(record['host_cname'])
                 else:
-                    label_duplicate.append(record['host_cname'])
+                    label_duplicate.append(record['host_cname'].lower())
             else:
                 temp_dict['host_cname'] = None
         except Exception as e:
@@ -447,20 +447,20 @@ def process_form(data):
             if not record['external']:
                 try:
                     temp_dict['mail_host'] = Validation.check_host_name(record['mail_host'], 'MAIL HOST NAME')
-                    if record['mail_host'] in label_duplicate:
+                    if record['mail_host'].lower() in label_duplicate:
                         temp_dict_error['mail_host'] = "Duplicate '{}' label".format(record['mail_host'])
                     else:
-                        label_duplicate.append(record['mail_host'])
+                        label_duplicate.append(record['mail_host'].lower())
                 except Exception as e:
                     temp_dict_error['mail_host'] = str(e)
 
                 try:
                     if record['mail_cname'] != '':
                         temp_dict['mail_cname'] = Validation.check_host_name(record['mail_cname'], 'CNAME')
-                        if record['mail_cname'] in label_duplicate:
+                        if record['mail_cname'].lower() in label_duplicate:
                             temp_dict_error['mail_cname'] = "'{}' label for CNAME already exists".format(record['mail_cname'])
                         else:
-                            label_duplicate.append(record['mail_cname'])
+                            label_duplicate.append(record['mail_cname'].lower())
                     else:
                         temp_dict['mail_cname'] = None
                 except Exception as e:
