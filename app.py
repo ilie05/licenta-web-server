@@ -253,7 +253,6 @@ def process_form(data):
     zone_doc['hosts_records'] = []
     error['mails_records'] = []
     zone_doc['mails_records'] = []
-    ip_duplicates = {}
 
     try:
         zone_doc['domain_details']['domain_name'] = Validation.check_domain_name(domain_details['domain_name'], 'Domain Name')
@@ -294,7 +293,6 @@ def process_form(data):
     # check name server records
     temp_dict = {}
     temp_dict_error = {}
-    label_duplicate = []
 
     # Must be at least one NS record for SOA resource record used in zone file
     if not len(ns_records):
@@ -304,10 +302,6 @@ def process_form(data):
         if type(record['external']) != bool:
             temp_dict['external'] = 'Wrong Type External Record!'
             continue
-        if record['ns'].lower() in label_duplicate:
-            temp_dict_error['ns'] = "Duplicate '{}' label".format(record['ns'])
-        else:
-            label_duplicate.append(record['ns'].lower())
 
         if record['external']:
             try:
@@ -329,11 +323,7 @@ def process_form(data):
                         temp_dict_error['ns_ip'] = "{} address is the same as network address".format(str(ns_ip))
                     elif ns_ip == SUBNET.broadcast_address:
                         temp_dict_error['ns_ip'] = "{} address is the same as broadcast network address".format(str(ns_ip))
-                    elif ns_ip in ip_duplicates:
-                        temp_dict_error['ns_ip'] = "{0} address already assigned to '{1}' label".format(str(ns_ip), ip_duplicates[ns_ip])
                     elif ns_ip in SUBNET:
-                        if 'ns' in temp_dict:
-                            ip_duplicates[ns_ip] = temp_dict['ns']
                         temp_dict['ns_ip'] = str(ns_ip)
                         temp_dict['ns_ip_reverse'] = str(ns_ip.reverse_pointer)
                     else:
@@ -363,10 +353,6 @@ def process_form(data):
     for _, record in enumerate(hosts_records):
         try:
             temp_dict['host_name'] = Validation.check_host_name(record['host_name'], 'HOST NAME')
-            if record['host_name'].lower() in label_duplicate:
-                temp_dict_error['host_name'] = "Duplicate '{}' label".format(record['host_name'])
-            else:
-                label_duplicate.append(record['host_name'].lower())
         except Exception as e:
             temp_dict_error['host_name'] = str(e)
 
@@ -380,12 +366,7 @@ def process_form(data):
                     temp_dict_error['host_name_ip'] = "{} address is the same as network address".format(str(host_name_ip))
                 elif host_name_ip == SUBNET.broadcast_address:
                     temp_dict_error['host_name_ip'] = "{} address is the same as broadcast network address".format(str(host_name_ip))
-                elif host_name_ip in ip_duplicates:
-                    temp_dict_error['host_name_ip'] = "{0} address already assigned to '{1}' label".format(
-                        str(host_name_ip), ip_duplicates[host_name_ip])
                 elif host_name_ip in SUBNET:
-                    if 'host_name' in temp_dict:
-                        ip_duplicates[host_name_ip] = temp_dict['host_name']
                     temp_dict['host_name_ip'] = str(host_name_ip)
                     temp_dict['host_name_ip_reverse'] = str(host_name_ip.reverse_pointer)
                 else:
@@ -405,10 +386,6 @@ def process_form(data):
         try:
             if record['host_cname'] != '':
                 temp_dict['host_cname'] = Validation.check_host_name(record['host_cname'], 'CNAME')
-                if record['host_cname'].lower() in label_duplicate:
-                    temp_dict_error['host_cname'] = "'{}' label for CNAME already exists".format(record['host_cname'])
-                else:
-                    label_duplicate.append(record['host_cname'].lower())
             else:
                 temp_dict['host_cname'] = None
         except Exception as e:
@@ -446,24 +423,8 @@ def process_form(data):
             if not record['external']:
                 try:
                     temp_dict['mail_host'] = Validation.check_host_name(record['mail_host'], 'MAIL HOST NAME')
-                    if record['mail_host'].lower() in label_duplicate:
-                        temp_dict_error['mail_host'] = "Duplicate '{}' label".format(record['mail_host'])
-                    else:
-                        label_duplicate.append(record['mail_host'].lower())
                 except Exception as e:
                     temp_dict_error['mail_host'] = str(e)
-
-                try:
-                    if record['mail_cname'] != '':
-                        temp_dict['mail_cname'] = Validation.check_host_name(record['mail_cname'], 'CNAME')
-                        if record['mail_cname'].lower() in label_duplicate:
-                            temp_dict_error['mail_cname'] = "'{}' label for CNAME already exists".format(record['mail_cname'])
-                        else:
-                            label_duplicate.append(record['mail_cname'].lower())
-                    else:
-                        temp_dict['mail_cname'] = None
-                except Exception as e:
-                    temp_dict_error['mail_cname'] = str(e)
 
                 try:
                     mail_ip_host = ipaddress.ip_address(record['mail_ip_host'])
@@ -478,12 +439,7 @@ def process_form(data):
                             temp_dict_error[
                                 'mail_ip_host'] = "{} address is the same as broadcast network address".format(
                                 str(mail_ip_host))
-                        elif mail_ip_host in ip_duplicates:
-                            temp_dict_error['mail_ip_host'] = "{0} address already assigned to '{1}' label".format(
-                                str(mail_ip_host), ip_duplicates[mail_ip_host])
                         if mail_ip_host in SUBNET:
-                            if 'mail_host' in temp_dict:
-                                ip_duplicates[mail_ip_host] = temp_dict['mail_host']
                             temp_dict['mail_ip_host'] = str(mail_ip_host)
                             temp_dict['mail_ip_host_reverse'] = str(mail_ip_host.reverse_pointer)
                         else:
@@ -511,6 +467,14 @@ def process_form(data):
                     temp_dict_error['mail_host'] = str(e)
         except:
             continue
+
+        try:
+            if record['mail_cname'] != '':
+                temp_dict['mail_cname'] = Validation.check_host_name(record['mail_cname'], 'CNAME')
+            else:
+                temp_dict['mail_cname'] = None
+        except Exception as e:
+            temp_dict_error['mail_cname'] = str(e)
 
         try:
             if record['mail_ttl'] == '':
