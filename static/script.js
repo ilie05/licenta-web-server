@@ -3,8 +3,9 @@ let counterHostRecords = 2;
 let counterMailRecords = 2;
 
 $(document).ready(function () {
+    document.getElementById('defaultOpen').click();
 
-    document.getElementById("defaultOpen").click();
+    $('span.span-error').css('display', 'none');
 
     // activate event on already existing elements on page
     $('.ns_record').on('focusout', checkCompleteNsRecord);
@@ -39,7 +40,8 @@ function openTab(evt, tabName, _this) {
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 
-    $(_this).find('span').css('display', 'none');
+    $(_this).find('span.arrow').css('display', 'none');
+    $(_this).find('span.span-error').css('display', 'none');
 }
 
 function mySubmitFunction() {
@@ -81,6 +83,7 @@ function mySubmitFunction() {
     $('.tabcontent .errors').empty();
 
     ajaxRequest(obj_to_send);
+    $('span.span-error').css('display', 'none');
     return false;
 }
 
@@ -120,6 +123,7 @@ function displayErrors(errors) {
     div.css('display', 'none');
     if (Object.keys(errors.domain_details).length != 0) {
         div.css('display', 'block');
+        $('button#defaultOpen span.span-error').css('display', 'inline');
         for (const key in errors.domain_details) {
             let value = errors.domain_details[key];
             div.append(`<p>${value}</p>`);
@@ -127,6 +131,7 @@ function displayErrors(errors) {
     }
 
     if (errors.ns_records && errors.ns_records.length) {
+        $('button#defaultOpen span.span-error').css('display', 'inline');
         div.css('display', 'block');
         errors.ns_records.forEach((record) => {
             for (const key in record) {
@@ -140,6 +145,7 @@ function displayErrors(errors) {
     div.css('display', 'none');
     if (errors.hosts_records && errors.hosts_records.length) {
         div.css('display', 'block');
+        $('button#btn-tab-host span.span-error').css('display', 'inline');
         errors.hosts_records.forEach((record) => {
             for (const key in record) {
                 let value = record[key];
@@ -151,6 +157,7 @@ function displayErrors(errors) {
     div = $('#mail .errors');
     div.css('display', 'none');
     if (errors.mails_records && errors.mails_records.length) {
+        $('button#btn-tab-mail span.span-error').css('display', 'inline');
         div.css('display', 'block');
         errors.mails_records.forEach((record) => {
             for (const key in record) {

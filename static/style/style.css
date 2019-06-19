@@ -124,9 +124,16 @@ input:disabled, select:disabled {
     margin-top: 8px ;
 }
 
-button span{
+button span.arrow{
     color: green;
     float: right;
+    font-size:30px;
+    font-weight: bold;
+}
+button span.span-error{
+    color: red;
+    float: right;
+    font-size:30px;
     font-weight: bold;
 }
 
