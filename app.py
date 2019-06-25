@@ -1,13 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response, session, escape
-from flask import jsonify
+from flask import Flask, render_template, request, make_response, session, jsonify
 from validation import Validation
 from bson.objectid import ObjectId
 import os
 import math
-import re
 import ipaddress
-import json
-import sys
 import pymongo
 import datetime
 
@@ -18,27 +14,6 @@ collection = db['zones']
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-
-
-@app.route('/test', methods=['POST', 'GET'])
-def test():
-    if request.method == 'POST':
-        data = request.get_json();
-        print(request.get_json())
-        if data['data'] == 'true':
-            return make_response(jsonify({'data': "good data"}), 200)
-        else:
-            #return render_template('test.html', message="HAHAHA")
-            return make_response(render_template('test.html', message="HAHAHA"), 400)
-    else:
-        print("GET")
-        print(request.get_json())
-        return render_template('test.html')
-
-
-@app.route('/echo')
-def echo():
-    return render_template('echo.html')
 
 
 @app.route('/')

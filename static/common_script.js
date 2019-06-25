@@ -11,7 +11,7 @@ function CheckChangeEvent() {
             input_target.value = '';
             mail_txt.disabled = true;
             mail_txt.value = '';
-            host_domain_input.attr('placeholder', 'Domain name...');
+            host_domain_input.attr('placeholder', 'Mail domain name...');
             host_domain_input.attr('pattern', '[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\\.[a-zA-Z]{2,})+');
         } else {
             mail_txt.disabled = false;

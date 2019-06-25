@@ -245,7 +245,7 @@ function createMailRecords(mails_records) {
 			        placeholder="CNAME..." class="form-control" value="${cname}"
 			        pattern="^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$">
                 <label class="form-check-label">
-                    <input type="checkbox" class="external-check form-check-input" name="external${counterMailRecords}">External
+                    <input type="checkbox" class="external-check form-check-input" name="mail_external${counterMailRecords}">External
                 </label> 
 				<button class="btn btn-del" type="button"><i class="fa fa-trash-o" style="font-size:25px;color:red"></i></button>
                 <button class="btn btn-edit" type="button"><i class="material-icons" style="font-size:25px;color:blue">edit</i></button> 
@@ -257,7 +257,7 @@ function createMailRecords(mails_records) {
         mails_records_wrapper.find('.mail_record span.not-complete').css('visibility', 'hidden');
         mails_records_wrapper.find('.mail_record').on('focusout', checkCompleteMailRecord);
 
-        if (Object.keys(record).length == 5) {
+        if (Object.keys(record).length == 4) {
             $('.mail_record:last > label > input').attr('checked', 'checked');
         }
         $(".external-check").change(CheckChangeEvent);
