@@ -27,7 +27,15 @@ input[type=number] {
 }
 
 .form-control{
-    margin: 0 auto !important;
+    margin: 0 auto;
+}
+
+.host_record .form-control{
+    width: 18%;
+}
+
+.mail_record .form-control{
+    width: 14%;
 }
 
 .add {

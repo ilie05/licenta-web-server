@@ -145,7 +145,7 @@ function createNsRecord(ns_records) {
     let content, ip_addr, ns_record_wrapper = $('.ns_record_wrapper');
 
     ns_records.forEach((record) => {
-        if (Object.keys(record).length === 4) ip_addr = record.ns_ip;
+        if (record.hasOwnProperty('ns_ip')) ip_addr = record.ns_ip;
         else ip_addr = '';
         content = `
 		  	<div class='ns_record form-inline'>
@@ -168,7 +168,7 @@ function createNsRecord(ns_records) {
         ns_record_wrapper.find('.ns_record span.not-complete').css('visibility', 'hidden');
         ns_record_wrapper.find('.ns_record').on('focusout', checkCompleteNsRecord);
 
-        if (Object.keys(record).length == 2) {
+        if (!record.hasOwnProperty('ns_ip')) {
             $('.ns_record:last > label > input').attr('checked', 'checked');
         }
         $(".external-check").change(CheckChangeEvent);
@@ -218,7 +218,7 @@ function createMailRecords(mails_records) {
     let content, mails_records_wrapper = $('.mail_record_wrapper');
     let ttl, cname, ip_addr, txt;
     mails_records.forEach((record) => {
-        if (Object.keys(record).length === 7) ip_addr = record.mail_ip_host;
+        if (record.hasOwnProperty('mail_ip_host')) ip_addr = record.mail_ip_host;
         else ip_addr = '';
 
         ttl = record.mail_ttl;
@@ -257,7 +257,7 @@ function createMailRecords(mails_records) {
         mails_records_wrapper.find('.mail_record span.not-complete').css('visibility', 'hidden');
         mails_records_wrapper.find('.mail_record').on('focusout', checkCompleteMailRecord);
 
-        if (Object.keys(record).length == 4) {
+        if (!record.hasOwnProperty('mail_ip_host')) {
             $('.mail_record:last > label > input').attr('checked', 'checked');
         }
         $(".external-check").change(CheckChangeEvent);
