@@ -9,7 +9,7 @@ import datetime
 from functools import wraps
 
 
-client = pymongo.MongoClient('mongodb://localhost:27017/')
+client = pymongo.MongoClient('mongodb://localhost:27017/', serverSelectionTimeoutMS=500)
 db = client['licenta']
 collection = db['zones']
 
@@ -21,7 +21,7 @@ def check_connection(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
-            conn = db.command("serverStatus")["connections"]
+            client.server_info()
             return func(*args, **kwargs)
         except:
             return redirect(url_for('internal_error'))
@@ -30,13 +30,11 @@ def check_connection(func):
 
 
 @app.route('/')
-@check_connection
 def index():
     return render_template("index.html")
 
 
 @app.route('/record', methods=['POST'])
-@check_connection
 def record():
     try:
         data = request.get_json()
@@ -47,7 +45,10 @@ def record():
         data['modify_time'] = datetime.datetime.utcnow()
         data['status'] = 'insert'
         if status:
-            collection.insert_one(data)
+            try:
+                collection.insert_one(data)
+            except:
+                return make_response('', 500)
             print("Good processing")
             print(data)
             return make_response('', 200)
@@ -84,7 +85,6 @@ def update():
 
 
 @app.route('/updateRecord', methods=['POST'])
-@check_connection
 def update_record():
     try:
         data = request.get_json()
@@ -118,16 +118,25 @@ def update_record():
 
             print("create new domain and delete the old one")
             # update status for the old document to 'delete'
-            collection.update_one({'_id': ObjectId(_id)}, {'$set': {'status': 'delete'}})
+            try:
+                collection.update_one({'_id': ObjectId(_id)}, {'$set': {'status': 'delete'}})
+            except:
+                return make_response('', 500)
         else:
             print('The domains correspond, update the old document')
-            collection.delete_one({'_id': ObjectId(_id)})
+            try:
+                collection.delete_one({'_id': ObjectId(_id)})
+            except:
+                return make_response('', 500)
 
         print("Insert updated or new record into collection")
         # insert updated or new record into collection
         data['modify_time'] = datetime.datetime.utcnow()
         data['status'] = 'insert'
-        collection.insert_one(data)
+        try:
+            collection.insert_one(data)
+        except:
+            return make_response('', 500)
         return make_response('', 200)
     except:
         print("Exeption! Bad request")
@@ -150,7 +159,6 @@ def success_delete():
 
 
 @app.route('/delete', methods=['POST'])
-@check_connection
 def delete():
     try:
         domain_name = request.get_json()
@@ -163,20 +171,25 @@ def delete():
             return make_response('', 400)
 
         _id = sess['record_id']
-        collection.update_one({'_id': ObjectId(_id)},
-                              {'$set': {'status': 'delete', 'modify_time': datetime.datetime.utcnow()}})
+        try:
+            collection.update_one({'_id': ObjectId(_id)},
+                                  {'$set': {'status': 'delete', 'modify_time': datetime.datetime.utcnow()}})
+        except:
+            return make_response('', 500)
         return make_response('', 200)
     except:
         return make_response('', 400)
 
 
 @app.route('/getDomain', methods=['POST'])
-@check_connection
 def get_domain():
     try:
         domain_name = request.get_json()
-        domain_record = collection.find_one(
-            {'domain_details.domain_name': domain_name['domain_name'], 'status': 'insert'})
+        try:
+            domain_record = collection.find_one(
+                {'domain_details.domain_name': domain_name['domain_name'], 'status': 'insert'})
+        except:
+            return make_response('', 500)
 
         # domain not found from SELECT user interface
         if not domain_record:
@@ -243,9 +256,14 @@ def process_form(data, operation=''):
     try:
         zone_doc['domain_details']['domain_name'] = Validation.check_domain_name(domain_details['domain_name'],
                                                                                  'Domain Name')
-        if operation == 'insert' and collection.find(
-                {'domain_details.domain_name': zone_doc['domain_details']['domain_name'], 'status': 'insert'}).count():
-            raise Exception('Domain "{}" already exists.'.format(zone_doc['domain_details']['domain_name']))
+        try:
+            count = collection.find(
+                {'domain_details.domain_name': zone_doc['domain_details']['domain_name'], 'status': 'insert'}).count()
+            if operation == 'insert' and count:
+                error['domain_details']['domain_name'] = 'Domain "{}" already exists.'.format(
+                    zone_doc['domain_details']['domain_name'])
+        except Exception as e:
+            print(e)
     except Exception as e:
         error['domain_details']['domain_name'] = str(e)
 

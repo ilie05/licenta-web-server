@@ -34,7 +34,7 @@
     </div>
 </div>
 
-<form id="record_form" onsubmit="return mySubmitFunction()" method="post">
+<form id="record_form" onsubmit="return mySubmitFunction();" method="post">
     <div class="container-fluid">
         <div id="domain" class="tabcontent">
             <div class="errors alert alert-danger">
@@ -90,6 +90,9 @@
                         <span class="not-complete">not complete</span>
                     </div>
                 </div>
+            </div>
+            <div style="position: fixed; bottom: 0 !important; left: 0 !important; width: 100%;">
+                <button type="submit" id="btn-submit" class="btn btn-success" form="record_form">Submit</button>
             </div>
         </div>
 
