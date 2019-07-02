@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, session, jsonify
+from flask import Flask, render_template, request, make_response, session, jsonify, redirect, url_for
 from validation import Validation
 from bson.objectid import ObjectId
 import os
@@ -6,6 +6,7 @@ import math
 import ipaddress
 import pymongo
 import datetime
+from functools import wraps
 
 
 client = pymongo.MongoClient('mongodb://localhost:27017/')
@@ -16,12 +17,26 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 
+def check_connection(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            conn = db.command("serverStatus")["connections"]
+            return func(*args, **kwargs)
+        except:
+            return redirect(url_for('internal_error'))
+
+    return wrapper
+
+
 @app.route('/')
+@check_connection
 def index():
     return render_template("index.html")
 
 
 @app.route('/record', methods=['POST'])
+@check_connection
 def record():
     try:
         data = request.get_json()
@@ -32,10 +47,7 @@ def record():
         data['modify_time'] = datetime.datetime.utcnow()
         data['status'] = 'insert'
         if status:
-            try:
-                collection.insert_one(data)
-            except:
-                return make_response('', 500)
+            collection.insert_one(data)
             print("Good processing")
             print(data)
             return make_response('', 200)
@@ -64,16 +76,15 @@ def internal_error():
 
 
 @app.route('/update')
+@check_connection
 def update():
-    try:
-        domains = collection.find({'status': {'$ne': 'delete'}}, {'domain_details': 1})
-    except:
-        return make_response('', 500)
+    domains = collection.find({'status': {'$ne': 'delete'}}, {'domain_details': 1})
     domain_names = [k['domain_details']['domain_name'] for k in domains]
     return render_template('update.html', domain_names=domain_names)
 
 
 @app.route('/updateRecord', methods=['POST'])
+@check_connection
 def update_record():
     try:
         data = request.get_json()
@@ -139,6 +150,7 @@ def success_delete():
 
 
 @app.route('/delete', methods=['POST'])
+@check_connection
 def delete():
     try:
         domain_name = request.get_json()
@@ -159,14 +171,12 @@ def delete():
 
 
 @app.route('/getDomain', methods=['POST'])
+@check_connection
 def get_domain():
     try:
         domain_name = request.get_json()
-        try:
-            domain_record = collection.find_one(
-                {'domain_details.domain_name': domain_name['domain_name'], 'status': 'insert'})
-        except:
-            return make_response('', 500)
+        domain_record = collection.find_one(
+            {'domain_details.domain_name': domain_name['domain_name'], 'status': 'insert'})
 
         # domain not found from SELECT user interface
         if not domain_record:
@@ -482,5 +492,5 @@ def process_form(data, operation=''):
         return True, zone_doc
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
