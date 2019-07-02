@@ -27,7 +27,7 @@ def record():
         data = request.get_json()
         print("Before processing")
         print(data)
-        status, data = process_form(data)
+        status, data = process_form(data, 'insert')
 
         data['modify_time'] = datetime.datetime.utcnow()
         data['status'] = 'insert'
@@ -163,7 +163,8 @@ def get_domain():
     try:
         domain_name = request.get_json()
         try:
-            domain_record = collection.find_one({'domain_details.domain_name': domain_name['domain_name']})
+            domain_record = collection.find_one(
+                {'domain_details.domain_name': domain_name['domain_name'], 'status': 'insert'})
         except:
             return make_response('', 500)
 
@@ -200,7 +201,7 @@ def make_reverse_zone(network, subnet):
     return '.'.join(rr_subnet.split('/')[1].split('.')[(num_secv - secv):])
 
 
-def process_form(data):
+def process_form(data, operation=''):
     zone_doc = {}
     error = {}
 
@@ -232,7 +233,7 @@ def process_form(data):
     try:
         zone_doc['domain_details']['domain_name'] = Validation.check_domain_name(domain_details['domain_name'],
                                                                                  'Domain Name')
-        if collection.find(
+        if operation == 'insert' and collection.find(
                 {'domain_details.domain_name': zone_doc['domain_details']['domain_name'], 'status': 'insert'}).count():
             raise Exception('Domain "{}" already exists.'.format(zone_doc['domain_details']['domain_name']))
     except Exception as e:
