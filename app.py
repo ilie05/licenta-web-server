@@ -212,16 +212,40 @@ def page_not_found(e):
     return render_template('errors/405_not_allowed.html')
 
 
-def make_reverse_zone(network, subnet):
-    if network.version == 4:
-        num_secv = 4
-    else:
-        num_secv = 16
+def make_reverse_zone_ipv4(network, subnet):
+    num_secv = 4
 
     secv = math.floor(int(subnet) / 8)
     rr_subnet = network.reverse_pointer
-
     return '.'.join(rr_subnet.split('/')[1].split('.')[(num_secv - secv):])
+
+
+def make_reverse_zone_ipv6(network):
+    mask = str(network.netmask)
+    net_address = str(network.network_address.exploded)
+
+    lis = mask.split(':')
+    if '' in lis:
+        lis.pop()
+        lis.pop()
+        for i in range(8 - len(lis)):
+            lis.append('0000')
+
+    mask = ''.join(lis)
+    net_address = ''.join(net_address.split(':'))
+    print(net_address)
+    print(mask)
+
+    rev = 'apra.6pi'
+    for i in range(len(mask)):
+        if mask[i] == '0':
+            break
+        a = int(net_address[i], 16)
+        print(net_address[i])
+        m = int(mask[i], 16)
+        c = a & m
+        rev += '.{}'.format(hex(c)[2:])
+    return rev[::-1]
 
 
 def process_form(data, operation=''):
@@ -290,13 +314,15 @@ def process_form(data, operation=''):
         zone_doc['domain_details']['domain_subnet'] = str(SUBNET)
         if SUBNET.version == 4:
             zone_doc['domain_details']['record_type'] = 'A'
+            zone_doc['domain_details']['domain_reverse_addr'] = make_reverse_zone_ipv4(SUBNET,
+                                                                                       domain_details['domain_subnet'])
         else:
             zone_doc['domain_details']['record_type'] = 'AAAA'
+            zone_doc['domain_details']['domain_reverse_addr'] = make_reverse_zone_ipv6(SUBNET)
     except Exception as e:
         error['domain_details']['domain_subnet'] = 'Domain address {}'.format(str(e))
         return False, error
 
-    zone_doc['domain_details']['domain_reverse_addr'] = make_reverse_zone(SUBNET, domain_details['domain_subnet'])
 
     # check name server records
     temp_dict = {}
