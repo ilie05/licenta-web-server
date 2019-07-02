@@ -230,7 +230,11 @@ def process_form(data):
     zone_doc['mails_records'] = []
 
     try:
-        zone_doc['domain_details']['domain_name'] = Validation.check_domain_name(domain_details['domain_name'], 'Domain Name')
+        zone_doc['domain_details']['domain_name'] = Validation.check_domain_name(domain_details['domain_name'],
+                                                                                 'Domain Name')
+        if collection.find(
+                {'domain_details.domain_name': zone_doc['domain_details']['domain_name'], 'status': 'insert'}).count():
+            raise Exception('Domain "{}" already exists.'.format(zone_doc['domain_details']['domain_name']))
     except Exception as e:
         error['domain_details']['domain_name'] = str(e)
 
