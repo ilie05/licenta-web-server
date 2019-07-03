@@ -33,7 +33,6 @@ $(document).ready(function () {
                 }
             },
             error: function (data) {
-                console.log("Ajax response error function!");
                 if (data.status == 400) {
                     let errors = JSON.parse(data.responseText);
                     displayErrors(errors)
@@ -116,7 +115,6 @@ function createDomainContent(data) {
                 window.location.href = '/successDelete';
             },
             error: function (data) {
-                console.log("Ajax response error function!");
                 if (data.status == 400) {
                     window.location.href = '/400';
                 } else if (data.status == 500) {
@@ -307,8 +305,6 @@ function saveFunction() {
         hosts_records: hosts_records,
         mails_records: mails_records
     };
-    console.log("Object to send: ");
-    console.log(obj_to_send);
     ajaxRequest(obj_to_send);
     return false;
 }
@@ -321,13 +317,9 @@ function ajaxRequest(data_to_send) {
         dataType: 'text',
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-            console.log("Ajax response success function!");
-            console.log(data);
             window.location.href = '/successUpdate';
         },
         error: function (data) {
-            console.log(data.status);
-            console.log("Ajax response error function!");
             if (data.status == 400) {
                 try {
                     let errors = JSON.parse(data.responseText);
@@ -350,10 +342,8 @@ function displayErrors(errors) {
     $('.row .errors').empty();
 
     let div = $('.domain-field').parent('div').parent('.row').find('.errors');
-    console.log(div)
     div.css('display', 'none');
     if (Object.keys(errors.domain_details).length != 0) {
-        console.log(JSON.stringify(errors.domain_details))
         div.css('display', 'block');
         for (const key in errors.domain_details) {
             let value = errors.domain_details[key];

@@ -95,13 +95,9 @@ function ajaxRequest(data_to_send) {
         dataType: 'text',
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-            console.log("Ajax response success function!");
-            console.log(data);
             window.location.href = '/successInsert';
         },
         error: function (data) {
-            console.log(data.status);
-            console.log("Ajax response error function!");
             if (data.status == 400) {
                 let errors = JSON.parse(data.responseText);
                 displayErrors(errors)
@@ -117,8 +113,6 @@ function ajaxRequest(data_to_send) {
 }
 
 function displayErrors(errors) {
-    console.log("ERRORS:")
-    console.log(errors)
     let div = $('#domain .errors');
     div.css('display', 'none');
     if (Object.keys(errors.domain_details).length != 0) {
