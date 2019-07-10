@@ -119,7 +119,8 @@ def update_record():
             print("create new domain and delete the old one")
             # update status for the old document to 'delete'
             try:
-                collection.update_one({'_id': ObjectId(_id)}, {'$set': {'status': 'delete'}})
+                collection.update_one({'_id': ObjectId(_id)},
+                                      {'$set': {'status': 'delete', 'modify_time': datetime.datetime.utcnow()}})
             except:
                 return make_response('', 500)
         else:
